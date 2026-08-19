@@ -1078,6 +1078,7 @@
 
   function flushWriteBack() {
     if (!settings) return;
+    if (vaultRuntime.syncing) { clearTimeout(flushTimer); flushTimer = setTimeout(flushWriteBack, SYNC_DEBOUNCE_MS); return; }
     var tasksIds = Object.keys(state.vault.pendingTaskIds);
     var vehicleIds = Object.keys(state.vault.pendingVehicleIds);
     if (!tasksIds.length && !vehicleIds.length) return;
@@ -1133,7 +1134,7 @@
     }).then(function () {
       vaultRuntime.syncing = false;
       renderVaultStatus();
-      if (vaultDirty()) toast('Vault sync failed — see Diagnostics in Settings');
+      if (vaultRuntime.lastError) toast('Vault sync failed — see Diagnostics in Settings');
     });
   }
 
@@ -1152,7 +1153,7 @@
     var line = document.getElementById('vault-status-line');
     if (line) line.textContent = vaultStatusText() + (settings ? ' · ' + settings.owner + '/' + settings.repo : '');
     var retryBtn = document.getElementById('vault-retry-btn');
-    if (retryBtn) retryBtn.style.display = (vaultRuntime.lastError && vaultDirty()) ? '' : 'none';
+    if (retryBtn) retryBtn.style.display = vaultDirty() ? '' : 'none';
     var diag = document.getElementById('vault-diagnostics');
     if (diag) {
       diag.textContent = JSON.stringify({
@@ -1693,7 +1694,10 @@
   ensureBenchmark();
   nextCandidate();
   persist();
-  if (settings) { showApp(); switchView('focus'); pullVault(); } else { showGate(); }
+  if (settings) {
+    showApp(); switchView('focus');
+    pullVault().then(function () { if (vaultDirty()) flushWriteBack(); });
+  } else { showGate(); }
 })();
 </script>
 

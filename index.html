@@ -32,1195 +32,511 @@
   }
 
   :root {
-    --paper: #edefea;
-    --paper-2: #ffffff;
-    --paper-3: #dfe2db;
-    --amber: #d98e2b;
-    --rust: #b5503a;
-    --slate: #5c6b73;
-    --teal: #2e6b60;
-    --text: #241f1a;
-    --text-dim: #6b6459;
-    --line: #cfd2c8;
-    --shadow: 0 1px 2px rgba(28,24,21,.06), 0 8px 24px -12px rgba(28,24,21,.18);
-    --radius: 14px;
-    --badge-due-fg: #7a4c10;
-    --badge-high-fg: #b5503a;
+    --bg:#f2f6fa; --surface:#ffffff; --surface-2:#e8eef5; --line:#d3dce6;
+    --text:#16202c; --text-2:#4b5c70; --text-3:#7c8b9c;
+    --accent:#006caa; --danger:#c42b32; --warn:#a86a10; --good:#0f7a5f;
+    --font-read:'Lora', Georgia, serif;
+    --font-ui:'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-data: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    --radius: 10px;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #1c1815;
-      --paper-2: #262019;
-      --paper-3: #322b23;
-      --text: #ede6da;
-      --text-dim: #a99f8f;
-      --line: #3c342b;
-      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.55);
-      --badge-due-fg: #f0b968;
-      --badge-high-fg: #e1897a;
+    :root:not([data-theme="light"]) {
+      --bg:#0f1521; --surface:#161e2d; --surface-2:#1f2a3c; --line:#2a3749;
+      --text:#e8eef6; --text-2:#9baabf; --text-3:#6b7c93;
+      --accent:#3ba3dc; --danger:#ff6b6b; --warn:#e8a33d; --good:#35c08a;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --paper: #1c1815;
-    --paper-2: #262019;
-    --paper-3: #322b23;
-    --text: #ede6da;
-    --text-dim: #a99f8f;
-    --line: #3c342b;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.55);
-    --badge-due-fg: #f0b968;
-    --badge-high-fg: #e1897a;
+    --bg:#0f1521; --surface:#161e2d; --surface-2:#1f2a3c; --line:#2a3749;
+    --text:#e8eef6; --text-2:#9baabf; --text-3:#6b7c93;
+    --accent:#3ba3dc; --danger:#ff6b6b; --warn:#e8a33d; --good:#35c08a;
     color-scheme: dark;
   }
-  :root[data-theme="light"] {
-    --paper: #edefea;
-    --paper-2: #ffffff;
-    --paper-3: #dfe2db;
-    --text: #241f1a;
-    --text-dim: #6b6459;
-    --line: #cfd2c8;
-    --shadow: 0 1px 2px rgba(28,24,21,.06), 0 8px 24px -12px rgba(28,24,21,.18);
-    --badge-due-fg: #7a4c10;
-    --badge-high-fg: #b5503a;
-    color-scheme: light;
-  }
-
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--text);
-    font-family: 'Lora', Georgia, serif;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font-ui); -webkit-font-smoothing: antialiased;
   }
-  @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
-  }
+  button { font-family: inherit; }
+  a { color: var(--accent); }
+  .hidden { display: none !important; }
 
-  .display {
-    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-    font-weight: 600;
-    letter-spacing: .02em;
+  /* ---- gate ---- */
+  #gate {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #fafafa; color: #222; font-family: system-ui, sans-serif;
   }
-  .eyebrow {
-    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    font-size: .72rem;
-    color: var(--text-dim);
+  #gate form { display: grid; gap: 8px; width: 280px; }
+  #gate input {
+    padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font: inherit;
   }
-  .mono {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
-    font-variant-numeric: tabular-nums;
-  }
+  #gate input.err { border-color: #c42b32; }
+  #gate button { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; }
 
-  .app {
-    max-width: 560px;
-    margin: 0 auto;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
-
+  /* ---- app shell ---- */
+  #app { max-width: 760px; margin: 0 auto; padding: 0 16px 64px; }
   header.top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding: 20px 20px 12px;
-    gap: 12px;
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    padding: 18px 0 10px; border-bottom: 1px solid var(--line);
   }
-  header.top h1 {
-    margin: 0;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1.7rem;
-    letter-spacing: .01em;
+  header.top .brand { display: flex; align-items: baseline; gap: 10px; }
+  header.top .wordmark {
+    font-family: var(--font-ui); font-weight: 700; font-size: 26px; letter-spacing: .02em;
   }
-  header.top .tagline {
-    display: block;
-    font-family: 'Lora', serif;
-    font-style: italic;
-    font-size: .78rem;
-    color: var(--text-dim);
-    margin-top: 2px;
+  header.top .tagline { color: var(--text-3); font-size: 13px; }
+  header.top .meta-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px; font-family: var(--font-data); font-size: 12px; color: var(--text-2);
   }
-  .vault-pill {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: .68rem;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    color: var(--text-dim);
-    padding: 2px 8px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--paper-2);
-  }
-  .vault-panel {
-    margin: 4px 4px 20px;
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--paper-2);
-    font-size: .8rem;
-    color: var(--text-dim);
-  }
-  .vault-panel .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .vault-panel button {
-    font: inherit;
-    font-size: .72rem;
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text);
-    cursor: pointer;
-  }
-  .vault-panel button.retry { border-color: var(--rust); color: var(--rust); }
-  .vault-panel summary { cursor: pointer; font-size: .72rem; margin-top: 6px; }
-  .vault-panel pre {
-    margin: 6px 0 0;
-    padding: 8px;
-    background: var(--paper-3);
-    border-radius: 6px;
-    font-size: .68rem;
-    line-height: 1.4;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  nav.views {
-    display: flex;
-    gap: 6px;
-    background: var(--paper-3);
-    border-radius: 999px;
-    padding: 3px;
-  }
+  .progress-track { height: 4px; border-radius: 2px; background: var(--surface-2); margin-top: 10px; overflow: hidden; }
+  .progress-track > i { display: block; height: 100%; background: var(--accent); transition: width .2s ease; }
+  nav.views { display: flex; gap: 6px; margin-top: 12px; }
   nav.views button {
-    border: none;
-    background: transparent;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    font-size: .78rem;
-    padding: 7px 14px;
-    border-radius: 999px;
-    color: var(--text-dim);
-    cursor: pointer;
+    flex: 1; padding: 7px 0; border: 1px solid var(--line); background: var(--surface);
+    color: var(--text-2); border-radius: 8px; cursor: pointer; font-family: var(--font-ui); font-size: 14px;
   }
-  nav.views button.active {
-    background: var(--paper-2);
-    color: var(--text);
-    box-shadow: var(--shadow);
+  nav.views button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  #banner-slot, #notice-slot, #carry-slot, #nudge-slot { margin-top: 12px; }
+  .banner, .notice, .carry, .nudge {
+    padding: 10px 12px; border-radius: var(--radius); font-size: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .banner { background: var(--surface-2); color: var(--text-2); }
+  .notice.good { background: color-mix(in srgb, var(--good) 18%, var(--surface)); color: var(--good); }
+  .notice.warn { background: color-mix(in srgb, var(--warn) 18%, var(--surface)); color: var(--warn); }
+  .notice.err { background: color-mix(in srgb, var(--danger) 18%, var(--surface)); color: var(--danger); }
+  .carry { background: var(--surface-2); }
+  .nudge { background: color-mix(in srgb, var(--warn) 15%, var(--surface)); }
+  .banner button, .notice button, .carry button, .nudge button {
+    border: 1px solid currentColor; background: transparent; color: inherit;
+    padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: var(--font-ui); font-size: 13px; white-space: nowrap;
   }
 
-  main { flex: 1; padding: 4px 16px 32px; }
-  section.view { display: none; }
-  section.view.active { display: block; }
-
-  /* ---- contexts drawer ---- */
-  .contexts {
-    background: var(--paper-2);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    margin: 8px 4px 18px;
-    overflow: hidden;
-  }
-  .contexts summary-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 11px 14px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .contexts summary-row .label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-size: .78rem;
-    color: var(--text-dim);
-  }
-  .contexts summary-row .count { font-size: .82rem; color: var(--text-dim); }
-  .contexts summary-row .chev { transition: transform .18s ease; color: var(--text-dim); }
-  .contexts.open summary-row .chev { transform: rotate(180deg); }
-  .contexts .chips {
-    display: none;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 2px 14px 14px;
-  }
-  .contexts.open .chips { display: flex; }
-  .chip {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: .86rem;
-    letter-spacing: .01em;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: background .12s ease, color .12s ease, border-color .12s ease;
-  }
-  .chip.active {
-    background: var(--amber);
-    border-color: var(--amber);
-    color: #2a1a03;
-  }
-  .chip.ro { cursor: default; padding: 4px 10px; font-size: .78rem; }
-
-  /* ---- dot trail ---- */
-  .trail {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 6px 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .trail::-webkit-scrollbar { display: none; }
-  .trail .dot {
-    flex: none;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--line);
-  }
-  .trail .dot.yes { background: var(--amber); }
-  .trail .dot.no { background: var(--rust); opacity: .55; }
-  .trail .dot.cant { background: transparent; border: 1.5px solid var(--slate); }
-  .trail .dot.done { background: var(--teal); width: 10px; height: 10px; }
-  .trail .dot.dislodge { background: transparent; border: 1.5px solid var(--text-dim); }
-  .trail .stub { color: var(--text-dim); font-size: .72rem; }
+  main#stage { margin-top: 18px; }
+  .empty-state { text-align: center; padding: 48px 16px; color: var(--text-2); }
+  .empty-state .big { font-family: var(--font-read); font-size: 20px; color: var(--text); margin-bottom: 6px; }
 
   /* ---- cards ---- */
   .card {
-    background: var(--paper-2);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    padding: 18px 18px 16px;
-    box-shadow: var(--shadow);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 14px;
   }
-  .card + .card { margin-top: 14px; }
-  .card.benchmark { border-color: var(--amber); border-width: 1.5px; }
-  .card .eyebrow-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+  .card .eyebrow {
+    font-family: var(--font-ui); text-transform: uppercase; letter-spacing: .08em;
+    font-size: 11px; color: var(--text-3); display: flex; justify-content: space-between; align-items: center;
   }
-  .card .eyebrow-row .badges { display: flex; gap: 6px; }
-  .badge {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: .68rem;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    padding: 3px 8px;
-    border-radius: 999px;
-  }
-  .badge.due { background: rgba(217,142,43,.16); color: var(--badge-due-fg); }
-  .badge.high { background: rgba(181,80,58,.14); color: var(--badge-high-fg); }
-  .badge.recurring { background: rgba(92,107,115,.16); color: var(--slate); }
-
   .card .title {
-    font-family: 'Lora', serif;
-    font-size: 1.32rem;
-    line-height: 1.32;
-    font-weight: 600;
-    text-wrap: balance;
-    margin: 0 0 4px;
+    font-family: var(--font-read); font-size: 19px; line-height: 1.35; margin: 8px 0 10px; color: var(--text);
   }
-  .card .notes {
-    font-size: .86rem;
-    color: var(--text-dim);
-    margin: 0 0 10px;
-    font-style: italic;
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip {
+    font-family: var(--font-data); font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--text-2); background: var(--surface-2);
   }
-  .card .ctx-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip.priority-high { color: var(--danger); border-color: var(--danger); }
+  .chip.priority-low { color: var(--text-3); }
+  .chip.due-overdue { color: var(--danger); border-color: var(--danger); }
+  .chip.due-soon { color: var(--warn); border-color: var(--warn); }
+  .chip.score { font-variant-numeric: tabular-nums; }
+  .chip.filter { cursor: pointer; user-select: none; }
+  .chip.filter.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  .row-actions { display: flex; gap: 10px; margin-top: 14px; }
-  button.action {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    font-size: .84rem;
-    border-radius: 10px;
-    padding: 11px 14px;
-    border: none;
-    cursor: pointer;
-    flex: 1;
-    transition: transform .08s ease, filter .12s ease;
+  details.drilldown { margin: 6px 0 10px; }
+  details.drilldown summary { cursor: pointer; color: var(--text-3); font-size: 12px; }
+  details.drilldown .body { padding: 8px 0 0; font-size: 13px; color: var(--text-2); white-space: pre-wrap; }
+
+  .question { font-family: var(--font-ui); font-size: 14px; color: var(--text-2); margin: 6px 0 12px; }
+
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .btn-row button {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+    border-radius: 8px; padding: 10px 6px; cursor: pointer; font-family: var(--font-ui);
   }
-  button.action:active { transform: scale(.97); }
-  button.done { background: var(--teal); color: #eafaf5; }
-  button.dislodge { background: transparent; color: var(--text-dim); border: 1px solid var(--line); flex: none; padding: 11px 16px; }
-
-  .prompt {
-    text-align: center;
-    font-family: 'Lora', serif;
-    font-style: italic;
-    color: var(--text-dim);
-    font-size: .92rem;
-    margin: 16px 0 4px;
+  .btn-row button .label { font-size: 15px; font-weight: 600; }
+  .btn-row button .sub { font-size: 10px; color: var(--text-3); font-weight: 400; }
+  .btn-row button kbd {
+    font-family: var(--font-data); font-size: 10px; border: 1px solid var(--line);
+    border-radius: 4px; padding: 0 4px; color: var(--text-3);
   }
+  .btn-row button.yes { border-color: var(--good); }
+  .btn-row button.yes .label { color: var(--good); }
+  .btn-row button.no { border-color: var(--danger); }
+  .btn-row button.no .label { color: var(--danger); }
+  .btn-row button.cant .label { color: var(--text-2); }
 
-  .decide-row { display: flex; gap: 8px; margin-top: 14px; }
-  button.yes { background: var(--amber); color: #2a1a03; }
-  button.no { background: transparent; border: 1.5px solid var(--rust); color: var(--rust); }
-  button.cant { background: transparent; border: 1.5px solid var(--slate); color: var(--slate); }
+  .dispose-row { display: flex; gap: 8px; margin-top: 10px; }
+  .dispose-row button {
+    flex: 1; border: 1px dashed var(--line); background: transparent; color: var(--text-3);
+    border-radius: 8px; padding: 7px 0; cursor: pointer; font-size: 12px; font-family: var(--font-ui);
+  }
+  .dispose-row button:hover { color: var(--text); border-color: var(--text-2); }
 
-  .empty-pool {
-    text-align: center;
-    padding: 28px 20px;
-    color: var(--text-dim);
-    font-style: italic;
+  .subactions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .subactions button {
+    border: 1px solid var(--line); background: var(--surface); color: var(--text-2);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-family: var(--font-ui);
   }
 
-  .nudge {
-    background: var(--paper-3);
-    border: 1px dashed var(--text-dim);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    margin: 14px 0 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: .86rem;
-  }
-  .nudge button {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: .76rem;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    border: none;
-    border-radius: 8px;
-    padding: 7px 10px;
-    cursor: pointer;
-    background: var(--teal);
-    color: #eafaf5;
-    flex: none;
+  .dislodge-btn {
+    border: 1px solid var(--line); background: transparent; color: var(--text-3);
+    border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 11px; font-family: var(--font-ui);
   }
 
-  /* card enter/exit animation */
-  @keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  @keyframes swipeOut { to { transform: translateX(-24px); opacity: 0; } }
-  .card.enter { animation: slideUp .22s ease-out; }
-  .card.exit { animation: swipeOut .16s ease-in forwards; }
-
-  /* ---- list view ---- */
-  .section-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-size: .78rem;
-    color: var(--text-dim);
-    margin: 22px 6px 8px;
+  /* ---- comments ---- */
+  .comments { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .comments .entry { font-size: 13px; margin-bottom: 8px; }
+  .comments .entry .at { font-family: var(--font-data); font-size: 10px; color: var(--text-3); margin-right: 6px; }
+  .comments .entry .kind { font-family: var(--font-data); font-size: 10px; color: var(--accent); margin-right: 6px; }
+  .comments .add { display: flex; gap: 6px; margin-top: 8px; }
+  .comments textarea {
+    flex: 1; min-height: 40px; resize: vertical; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 13px;
   }
-  .section-title:first-child { margin-top: 6px; }
-
-  form#add-form {
-    background: var(--paper-2);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 14px;
-    margin: 8px 4px 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  form#add-form input[type=text], form#add-form input[type=date], form#add-form textarea {
-    font-family: 'Lora', serif;
-    font-size: .95rem;
-    padding: 9px 11px;
-    border-radius: 9px;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text);
-    width: 100%;
-  }
-  form#add-form textarea { resize: vertical; min-height: 44px; }
-  .field-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .prio-toggle { display: flex; gap: 6px; }
-  .prio-toggle button {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: .78rem;
-    text-transform: uppercase;
-    padding: 7px 11px;
-    border-radius: 8px;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text-dim);
-    cursor: pointer;
-  }
-  .prio-toggle button.active.HIGH { background: var(--rust); border-color: var(--rust); color: #fff; }
-  .prio-toggle button.active.MEDIUM { background: var(--amber); border-color: var(--amber); color: #2a1a03; }
-  .prio-toggle button.active.LOW { background: var(--slate); border-color: var(--slate); color: #fff; }
-  button.submit {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    background: var(--amber);
-    color: #2a1a03;
-    border: none;
-    border-radius: 9px;
-    padding: 11px;
-    cursor: pointer;
+  .comments .add button {
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px;
+    padding: 0 12px; cursor: pointer; font-size: 12px;
   }
 
-  .task-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--line);
+  /* ---- closer ---- */
+  .closer { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .closer button {
+    border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+    border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-family: var(--font-ui);
   }
-  .task-row:last-child { border-bottom: none; }
-  .task-row .tick {
-    flex: none;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid var(--text-dim);
-    background: transparent;
-    cursor: pointer;
-    margin-top: 2px;
+  .closer button.done { border-color: var(--good); color: var(--good); }
+  .closer button.cancel { border-color: var(--danger); color: var(--danger); }
+  .closer input.hours {
+    width: 64px; background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 6px; font: inherit; font-size: 12px;
   }
-  .task-row .tick:active { transform: scale(.9); }
-  .task-row .body { flex: 1; min-width: 0; }
-  .task-row .title { font-size: 1rem; font-weight: 600; }
-  .task-row .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .task-row .del {
-    flex: none;
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 2px 4px;
+  .undo-notice {
+    font-size: 12px; color: var(--text-2); background: var(--surface-2); border-radius: 6px;
+    padding: 6px 10px; margin-top: 8px; display: flex; justify-content: space-between; gap: 8px;
+  }
+  .undo-notice button { border: none; background: transparent; color: var(--accent); cursor: pointer; font-size: 12px; }
+
+  /* ---- defer ---- */
+  .defer-panel { margin-top: 10px; padding: 10px; border: 1px dashed var(--line); border-radius: 8px; }
+  .defer-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .defer-presets button {
+    border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2);
+    border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 12px;
+  }
+  .defer-presets button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .defer-panel input[type="date"], .defer-panel input[type="text"] {
+    width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 13px; margin-bottom: 6px;
+  }
+  .defer-panel .row { display: flex; gap: 8px; }
+  .defer-panel .row button {
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px;
+    padding: 6px 14px; cursor: pointer; font-size: 12px;
+  }
+  .defer-panel .row button.cancel { background: transparent; color: var(--text-2); border-color: var(--line); }
+
+  /* ---- chain mode ---- */
+  .chain-list { list-style: none; margin: 0; padding: 0; }
+  .chain-list li {
+    display: flex; align-items: baseline; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .chain-list li .n { font-family: var(--font-data); color: var(--text-3); width: 22px; flex: none; }
+  .chain-list li .t { flex: 1; font-family: var(--font-read); font-size: 15px; }
+  .chain-list .row-actions { display: flex; gap: 6px; }
+  .chain-list .row-actions button {
+    border: 1px solid var(--line); background: transparent; color: var(--text-2); border-radius: 6px;
+    padding: 3px 8px; font-size: 11px; cursor: pointer;
   }
 
-  .ctx-editor {
-    background: var(--paper-2);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 14px;
-    margin: 8px 4px;
+  /* ---- filters ---- */
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+  .filters input[type="search"] {
+    flex: 1; min-width: 140px; background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 13px;
   }
-  .ctx-editor .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-  .ctx-editor .chip-x { display: inline-flex; align-items: center; gap: 6px; }
-  .ctx-editor .chip-x span.x { cursor: pointer; opacity: .6; }
-  .ctx-editor .add-row { display: flex; gap: 8px; }
-  .ctx-editor .add-row input {
-    flex: 1;
-    font-family: 'Lora', serif;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text);
-  }
-  .ctx-editor .add-row button {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 0 14px;
-    cursor: pointer;
+  .filters .toggle {
+    font-size: 11px; color: var(--text-2); display: flex; align-items: center; gap: 4px; cursor: pointer;
   }
 
-  .export-row { margin: 24px 4px 4px; display: flex; flex-direction: column; gap: 8px; }
-  button.export {
-    width: 100%;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-    border-radius: 10px;
-    padding: 11px;
-    cursor: pointer;
+  /* ---- panels ---- */
+  #panels { margin-top: 22px; }
+  details.panel {
+    border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 8px; background: var(--surface);
   }
-  button.reseed { border-color: var(--amber); color: var(--amber); }
+  details.panel summary {
+    cursor: pointer; padding: 10px 14px; font-family: var(--font-ui); font-size: 14px; color: var(--text);
+    display: flex; justify-content: space-between; align-items: center; list-style: none;
+  }
+  details.panel summary::-webkit-details-marker { display: none; }
+  details.panel .badge {
+    font-family: var(--font-data); font-size: 11px; background: var(--surface-2); color: var(--text-2);
+    border-radius: 999px; padding: 1px 8px;
+  }
+  details.panel > div { padding: 0 14px 14px; }
+  .row-list { display: flex; flex-direction: column; gap: 6px; }
+  .row-list .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px;
+    padding: 6px 8px; border-radius: 6px; background: var(--surface-2);
+  }
+  .row-list .row .r-title { font-family: var(--font-read); flex: 1; }
+  .row-list .row .r-meta { font-family: var(--font-data); font-size: 11px; color: var(--text-3); }
+  .row-list .row button {
+    border: 1px solid var(--line); background: transparent; color: var(--text-2); border-radius: 6px;
+    padding: 2px 8px; font-size: 11px; cursor: pointer;
+  }
 
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%) translateY(8px);
-    background: #1c1815;
-    color: #ede6da;
-    font-size: .84rem;
-    padding: 9px 16px;
-    border-radius: 999px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .18s ease, transform .18s ease;
-    z-index: 20;
+  form.add-form { display: grid; gap: 8px; }
+  form.add-form input, form.add-form select, form.add-form textarea {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 13px;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  form.add-form button[type="submit"] {
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px;
+    padding: 8px 0; cursor: pointer; font-size: 13px;
+  }
 
-  a.credit {
-    display: block;
-    text-align: center;
-    font-size: .74rem;
-    color: var(--text-dim);
-    text-decoration: none;
-    padding: 6px 0 18px;
+  /* ---- settings ---- */
+  #view-settings { margin-top: 18px; }
+  #view-settings .panel-block {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 14px;
   }
-  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-  #tab-settings { font-size: .95rem; padding-left: 10px; padding-right: 10px; }
-  .setup-copy { font-size: .82rem; color: var(--text-dim); line-height: 1.5; margin: 10px 4px 16px; }
-  .setup-copy code { background: var(--paper-3); padding: 1px 5px; border-radius: 4px; font-size: .78rem; }
-  .setup-copy a { color: var(--amber); }
-  #settings-form { display: flex; flex-direction: column; gap: 10px; margin: 0 4px; }
-  .s-label { display: flex; flex-direction: column; gap: 4px; font-size: .78rem; color: var(--text-dim); }
-  .s-label input {
-    font: inherit; font-size: .9rem; padding: 10px 12px; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--paper-2); color: var(--text);
+  #view-settings label { display: block; font-size: 12px; color: var(--text-2); margin: 10px 0 4px; }
+  #view-settings input {
+    width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 13px;
   }
-  .settings-actions { display: flex; gap: 8px; }
-  .settings-actions button { flex: 1; }
-  .setup-test-result { font-size: .78rem; padding: 8px 10px; border-radius: 8px; background: var(--paper-3); color: var(--text-dim); }
-  .setup-test-result.ok { color: var(--text); border: 1px solid var(--amber); }
-  .setup-test-result.err { color: var(--rust); border: 1px solid var(--rust); }
+  #view-settings button {
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px;
+    padding: 8px 14px; cursor: pointer; font-size: 13px; margin-top: 10px; margin-right: 8px;
+  }
+  #view-settings button.secondary { background: transparent; color: var(--text-2); border-color: var(--line); }
+  #view-settings button.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  #view-settings pre {
+    background: var(--surface-2); color: var(--text-2); padding: 10px; border-radius: 6px; font-size: 11px;
+    overflow: auto; max-height: 240px;
+  }
 
-  #gate {
-    position: fixed;
-    inset: 0;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
+  footer.credit { text-align: center; padding: 24px 0 8px; font-size: 11px; color: var(--text-3); }
+
+  #toast {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(8px);
+    background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 8px; font-size: 13px;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 50;
   }
-  #gate-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    max-width: 260px;
-    padding: 20px;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    transition: border-color .15s;
-  }
-  #gate-form input {
-    font: 14px -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    background: #fff;
-    color: #111;
-  }
-  #gate-form button {
-    font: 14px -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    background: #f4f4f4;
-    color: #111;
-    cursor: pointer;
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.001ms !important; }
   }
 </style>
-
 </head>
 <body>
+
 <div id="gate">
   <form id="gate-form" autocomplete="off">
-    <input type="password" id="g-0" autocomplete="off" spellcheck="false">
-    <input type="text" id="g-1" autocomplete="off" spellcheck="false">
-    <input type="text" id="g-2" autocomplete="off" spellcheck="false">
-    <input type="text" id="g-3" autocomplete="off" spellcheck="false">
-    <input type="text" id="g-4" autocomplete="off" spellcheck="false">
-    <input type="text" id="g-5" autocomplete="off" spellcheck="false">
-    <button type="submit"></button>
+    <input id="g-0" type="password" placeholder="" autocomplete="off">
+    <input id="g-1" type="text" placeholder="" autocomplete="off">
+    <input id="g-2" type="text" placeholder="" autocomplete="off">
+    <input id="g-3" type="text" placeholder="" autocomplete="off">
+    <input id="g-4" type="text" placeholder="" autocomplete="off">
+    <input id="g-5" type="text" placeholder="" autocomplete="off">
+    <button type="submit">→</button>
   </form>
 </div>
 
-<div class="app" id="app-root" style="display:none;">
+<div id="app" hidden>
   <header class="top">
-    <div>
-      <h1 class="display">Chain</h1>
+    <div class="brand">
+      <span class="wordmark">Chain</span>
       <span class="tagline">a Forster list, digitized</span>
-      <div class="vault-pill" id="vault-status">Not connected</div>
     </div>
+    <div class="meta-row">
+      <span id="snapshot-stamp"></span>
+      <span id="header-counts"></span>
+    </div>
+    <div class="progress-track"><i id="progress-fill" style="width:0%"></i></div>
     <nav class="views">
-      <button id="tab-focus" class="active">Focus</button>
-      <button id="tab-list">List</button>
-      <button id="tab-settings" title="Settings">⚙</button>
+      <button data-view="review" class="active">Review</button>
+      <button data-view="chain">Chain</button>
+      <button data-view="settings">⚙</button>
     </nav>
   </header>
 
-  <main>
-    <section id="view-focus" class="view active">
-      <div class="contexts" id="contexts-drawer">
-        <div class="summary-row" id="contexts-toggle" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;">
-          <span class="label">Contexts</span>
-          <span style="display:flex;align-items:center;gap:8px;">
-            <span class="count mono" id="contexts-count">0 / 0</span>
-            <span class="chev">▾</span>
-          </span>
-        </div>
-        <div class="chips" id="contexts-chips"></div>
+  <div id="banner-slot"></div>
+  <div id="notice-slot"></div>
+  <div id="carry-slot"></div>
+  <div id="nudge-slot"></div>
+
+  <main id="stage"></main>
+
+  <section id="panels">
+    <details class="panel" id="panel-chain">
+      <summary>Chain <span class="badge" id="badge-chain">0</span></summary>
+      <div id="panel-chain-body"></div>
+    </details>
+    <details class="panel" id="panel-pool">
+      <summary>Pool <span class="badge" id="badge-pool">0</span></summary>
+      <div id="panel-pool-body">
+        <div class="filters" id="pool-filters"></div>
+        <div class="row-list" id="pool-list"></div>
       </div>
-
-      <div class="trail" id="trail"></div>
-
-      <div id="focus-stage"></div>
-    </section>
-
-    <section id="view-list" class="view">
-      <div class="section-title">Add a task</div>
-      <form id="add-form">
-        <input type="text" id="f-title" placeholder="What is it?" required maxlength="140">
-        <div class="field-row">
-          <div class="prio-toggle" id="f-priority">
-            <button type="button" data-p="HIGH">High</button>
-            <button type="button" data-p="MEDIUM" class="active">Medium</button>
-            <button type="button" data-p="LOW">Low</button>
-          </div>
-          <input type="date" id="f-due" style="flex:1;min-width:140px;">
-        </div>
-        <div class="chips" id="f-contexts"></div>
-        <textarea id="f-notes" placeholder="Notes (optional)"></textarea>
-        <button type="submit" class="submit">Add to the list</button>
-      </form>
-
-      <div class="section-title">Contexts</div>
-      <div class="ctx-editor">
-        <div class="chips" id="edit-contexts-chips"></div>
-        <div class="add-row">
-          <input type="text" id="new-context" placeholder="New context, e.g. Errand" maxlength="30">
-          <button type="button" id="add-context-btn">Add</button>
-        </div>
+    </details>
+    <details class="panel" id="panel-aside">
+      <summary>Set aside <span class="badge" id="badge-aside">0</span></summary>
+      <div id="panel-aside-body">
+        <div class="row-list" id="aside-list"></div>
+        <button id="return-aside-btn" style="margin-top:8px;border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">Return set-aside to pool</button>
       </div>
-
-      <div id="task-groups"></div>
-
-      <div class="export-row">
-        <button class="export" id="reseed-btn">Refresh from vault</button>
+    </details>
+    <details class="panel" id="panel-sleep">
+      <summary>Sleeping <span class="badge" id="badge-sleep">0</span></summary>
+      <div id="panel-sleep-body"><div class="row-list" id="sleep-list"></div></div>
+    </details>
+    <details class="panel" id="panel-add">
+      <summary>Add task</summary>
+      <div id="panel-add-body">
+        <form class="add-form" id="add-form">
+          <input type="text" id="f-title" placeholder="Title" required>
+          <select id="f-priority">
+            <option value="HIGH">High</option>
+            <option value="MEDIUM" selected>Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+          <select id="f-type">
+            <option value="task" selected>task</option>
+            <option value="return">return</option>
+            <option value="maintenance">maintenance</option>
+          </select>
+          <select id="f-effort">
+            <option value="">effort (none)</option>
+            <option value="xs">xs</option>
+            <option value="small">small</option>
+            <option value="medium">medium</option>
+            <option value="large">large</option>
+          </select>
+          <input type="date" id="f-due" placeholder="Due date">
+          <textarea id="f-notes" placeholder="Notes" rows="2"></textarea>
+          <button type="submit">Add to pool</button>
+        </form>
       </div>
-    </section>
+    </details>
+    <details class="panel" id="panel-scores">
+      <summary>Scores <span class="badge" id="badge-scores">0</span></summary>
+      <div id="panel-scores-body"><div class="row-list" id="scores-list"></div></div>
+    </details>
+  </section>
 
-    <section id="view-settings" class="view">
-      <div class="vault-panel" id="vault-panel">
-        <div class="row">
-          <span id="vault-status-line">Not connected</span>
-          <button type="button" class="retry" id="vault-retry-btn" style="display:none;">Retry sync</button>
-        </div>
-        <details>
-          <summary>Diagnostics</summary>
-          <pre id="vault-diagnostics">—</pre>
-        </details>
-      </div>
-
-      <div class="section-title">Connect your vault</div>
-      <p class="setup-copy">Chain reads and writes your task list directly from GitHub's API, using a personal access token stored only in this browser's local storage. Nothing is sent anywhere except <code>api.github.com</code> — this page is static and has no server of its own.</p>
-
+  <section id="view-settings" hidden>
+    <div class="panel-block">
+      <div class="eyebrow" style="font-family:var(--font-ui);font-size:12px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;">Vault connection</div>
+      <p style="font-size:13px;color:var(--text-2);" id="vault-status-line"></p>
+      <details>
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-3);">Diagnostics</summary>
+        <pre id="diagnostics-pre"></pre>
+      </details>
+      <button id="retry-sync-btn" class="secondary">Retry sync</button>
+    </div>
+    <div class="panel-block">
       <form id="settings-form">
-        <label class="s-label">GitHub token
-          <input type="password" id="s-token" placeholder="github_pat_..." autocomplete="off">
-        </label>
-        <label class="s-label">Owner
-          <input type="text" id="s-owner" placeholder="your-github-username" autocomplete="off">
-        </label>
-        <label class="s-label">Repo
-          <input type="text" id="s-repo" placeholder="your-repo-name" autocomplete="off">
-        </label>
-        <label class="s-label">Branch
-          <input type="text" id="s-branch" placeholder="main" autocomplete="off">
-        </label>
-        <label class="s-label">Tasks file path
-          <input type="text" id="s-tasks-path" placeholder="path/to/tasks.json" autocomplete="off">
-        </label>
-        <label class="s-label">Vehicle maintenance path (optional)
-          <input type="text" id="s-vehicle-path" placeholder="path/to/vehicle-maintenance.json (optional)" autocomplete="off">
-        </label>
-        <div class="settings-actions">
-          <button type="button" id="setup-test-btn" class="export">Test connection</button>
-          <button type="submit" class="export" style="border-color:var(--amber);color:var(--amber);">Save &amp; connect</button>
+        <label>Token</label><input id="s-token" type="password" autocomplete="off">
+        <label>Owner</label><input id="s-owner" type="text">
+        <label>Repo</label><input id="s-repo" type="text">
+        <label>Branch</label><input id="s-branch" type="text">
+        <label>Tasks path</label><input id="s-tasks-path" type="text">
+        <label>Vehicle maintenance path (optional)</label><input id="s-vehicle-path" type="text">
+        <label>Scores path</label><input id="s-scores-path" type="text">
+        <label>Chain path</label><input id="s-chain-path" type="text">
+        <label>Meta path (comments / start / defer)</label><input id="s-meta-path" type="text">
+        <div>
+          <button type="button" id="setup-test-btn" class="secondary">Test connection</button>
+          <span id="setup-test-result" style="font-size:12px;margin-left:8px;"></span>
         </div>
-        <div id="setup-test-result" class="setup-test-result"></div>
+        <button type="submit">Save &amp; connect</button>
       </form>
+      <button id="disconnect-btn" class="danger">Disconnect &amp; clear token</button>
+    </div>
+  </section>
 
-      <p class="setup-copy">Create a token scoped to just this one repo at
-        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>
-        — under "Repository access" choose <strong>Only select repositories</strong> and pick this one, then under
-        "Permissions → Repository permissions" set <strong>Contents: Read and write</strong>. Leave everything else
-        as No access. Pick a short expiration and re-issue it when it lapses.</p>
-
-      <div class="export-row">
-        <button class="export reseed" id="disconnect-btn" type="button">Disconnect &amp; clear token</button>
-      </div>
-    </section>
-  </main>
-
-  <a class="credit" href="#" onclick="return false;">Chain · reads/writes your GitHub repo directly from this browser · nothing else</a>
+  <footer class="credit">Chain — a Forster list, digitized</footer>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'chainApp.state.v1';
-  var SETTINGS_KEY = 'chainApp.settings.v1';
-  var COOLDOWN_MS = 4 * 60 * 60 * 1000;
-  var PASS_THRESHOLD = 5;
-  var DUE_WINDOW_DAYS = 14;
-  var SYNC_DEBOUNCE_MS = 2500;
   var API_VERSION = '2022-11-28';
+  var SYNC_DEBOUNCE_MS = 2500;
+  var DEFER_MAX_DAYS = 365;
+  var NUDGE_AT = 12;
+  var SETTINGS_KEY = 'chainApp.settings.v2';
+  var STATE_KEY = 'chainApp.state.v2';
 
-  // ---------- settings (owner/repo/token — never hardcoded, never shipped) ----------
-
-  function loadSettings() {
-    try {
-      var raw = localStorage.getItem(SETTINGS_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    return null;
-  }
-
-  function saveSettings(s) {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-  }
-
-  function clearSettings() {
-    localStorage.removeItem(SETTINGS_KEY);
-    localStorage.removeItem(STORAGE_KEY);
-  }
-
-  var settings = loadSettings();
-
-  // ---------- task model ----------
-
-  function mk(title, priority, dueDate, contexts) {
-    return {
-      id: cryptoId(),
-      title: title,
-      priority: priority,
-      type: 'task',
-      dueDate: dueDate,
-      isRecurring: false,
-      recurringIntervalDays: null,
-      completedAt: null,
-      createdAt: new Date().toISOString(),
-      notes: '',
-      requiredContexts: contexts || [],
-      lastRejectedAt: null,
-      source: 'local'
-    };
-  }
-
-  function cryptoId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  }
-
-  function genVaultId() {
-    return Math.floor(Date.now() % 1e7) * 1000 + Math.floor(Math.random() * 1000);
-  }
+  // ---------- generic utils ----------
 
   function todayISO() { return new Date().toISOString().slice(0, 10); }
-
-  function addDays(dateStr, days) {
-    var d = new Date(dateStr + 'T00:00:00');
-    d.setDate(d.getDate() + (days || 0));
+  function nowISO() {
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var offMin = -d.getTimezoneOffset();
+    var sign = offMin >= 0 ? '+' : '-';
+    offMin = Math.abs(offMin);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) +
+      sign + pad(Math.floor(offMin / 60)) + ':' + pad(offMin % 60);
+  }
+  function addDays(iso, n) {
+    var parts = iso.split('-').map(Number);
+    var d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    d.setUTCDate(d.getUTCDate() + n);
     return d.toISOString().slice(0, 10);
   }
-
-  function defaultContexts() {
-    return [
-      { name: 'Home', active: true },
-      { name: 'Laptop', active: true },
-      { name: 'Errand', active: false },
-      { name: 'Weekend', active: false },
-      { name: 'Car', active: false }
-    ];
+  function daysBetween(a, b) {
+    var pa = a.split('-').map(Number), pb = b.split('-').map(Number);
+    var da = Date.UTC(pa[0], pa[1] - 1, pa[2]);
+    var db = Date.UTC(pb[0], pb[1] - 1, pb[2]);
+    return Math.round((db - da) / 86400000);
   }
-
-  function defaultVaultState() {
-    return {
-      tasksRaw: null, tasksSha: null,
-      vehicleRaw: null, vehicleSha: null,
-      pendingTaskIds: {}, pendingVehicleIds: {},
-      lastSyncedAt: null
-    };
+  function isPlausibleDateStr(v) {
+    return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v);
   }
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (parsed && parsed.tasks && parsed.contexts) {
-          if (!parsed.vault) parsed.vault = defaultVaultState();
-          return parsed;
-        }
-      }
-    } catch (e) {}
-    return { tasks: [], contexts: defaultContexts(), benchmarkId: null, trail: [], vault: defaultVaultState() };
+  function cryptoId() {
+    var arr = new Uint8Array(4);
+    (window.crypto || window.msCrypto).getRandomValues(arr);
+    return Array.from(arr).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('').slice(0, 6);
   }
-
-  var state = load();
-  if (!state.trail) state.trail = [];
-  if (!state.vault) state.vault = defaultVaultState();
-  var cantIds = {};
-  var passStreak = 0;
-  var currentCandidateId = null;
-  var lastShownIds = {};
-
-  function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      tasks: state.tasks,
-      contexts: state.contexts,
-      benchmarkId: state.benchmarkId,
-      trail: state.trail.slice(-60),
-      vault: state.vault
+  function genVaultId() { return Date.now() + Math.floor(Math.random() * 90) + 10; }
+  function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p1) {
+      return String.fromCharCode('0x' + p1);
     }));
   }
-
-  // ---------- GitHub REST API (direct fetch — no server, no proxy) ----------
-  //
-  // Uses GitHub's public, documented Contents API: GET/PUT
-  // /repos/{owner}/{repo}/contents/{path}. api.github.com supports CORS for
-  // authenticated browser requests, so this runs entirely client-side. The
-  // token lives only in this browser's localStorage and is sent only in
-  // Authorization headers to api.github.com — never anywhere else, never
-  // baked into this page's source.
-
-  function ghHeaders() {
-    return {
-      'Authorization': 'Bearer ' + settings.token,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': API_VERSION
-    };
+  function b64DecodeUnicode(str) {
+    return decodeURIComponent(atob(str).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
   }
-
-  function ghContentsUrl(path, withRef) {
-    var u = 'https://api.github.com/repos/' + encodeURIComponent(settings.owner) + '/' + encodeURIComponent(settings.repo) + '/contents/' +
-      path.split('/').map(encodeURIComponent).join('/');
-    if (withRef && settings.branch) u += '?ref=' + encodeURIComponent(settings.branch);
-    return u;
-  }
-
-  function ghError(status, body) {
-    var msg = (body && body.message) || ('HTTP ' + status);
-    return { status: status, message: msg };
-  }
-
-  function b64DecodeUnicode(b64) {
-    var binary = atob(b64.replace(/\n/g, ''));
-    var bytes = new Uint8Array(binary.length);
-    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return new TextDecoder('utf-8').decode(bytes);
-  }
-
-  function b64EncodeUnicode(str) {
-    var bytes = new TextEncoder().encode(str);
-    var binary = '';
-    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-    return btoa(binary);
-  }
-
-  function ghGetFile(path) {
-    return fetch(ghContentsUrl(path, true), { headers: ghHeaders() }).then(function (res) {
-      if (!res.ok) return res.json().catch(function () { return null; }).then(function (body) { throw ghError(res.status, body); });
-      return res.json();
-    }).then(function (data) {
-      return { json: JSON.parse(b64DecodeUnicode(data.content)), sha: data.sha };
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-
-  function ghPutFile(path, obj, sha, message) {
-    var body = {
-      message: message,
-      content: b64EncodeUnicode(JSON.stringify(obj, null, 4)),
-      branch: settings.branch || 'main'
-    };
-    if (sha) body.sha = sha;
-    return fetch(ghContentsUrl(path, false), {
-      method: 'PUT',
-      headers: Object.assign({ 'Content-Type': 'application/json' }, ghHeaders()),
-      body: JSON.stringify(body)
-    }).then(function (res) {
-      if (!res.ok) return res.json().catch(function () { return null; }).then(function (body) { throw ghError(res.status, body); });
-      return res.json();
-    });
+  function unlink(v) {
+    if (typeof v !== 'string') return v;
+    var m = v.match(/^\[\[(.+)\]\]$/);
+    return m ? m[1] : v;
   }
-
-  // ---------- vault sync ----------
-
-  var vaultRuntime = { connected: !!settings, syncing: false, lastError: null };
-
-  function vaultDirty() {
-    return Object.keys(state.vault.pendingTaskIds || {}).length > 0 ||
-           Object.keys(state.vault.pendingVehicleIds || {}).length > 0;
+  function wikilink(v) {
+    if (typeof v !== 'string' || !v) return v;
+    return /^\[\[.+\]\]$/.test(v) ? v : '[[' + v + ']]';
   }
-
-  function toVaultTaskShape(t) {
-    return {
-      id: t.id, title: t.title, priority: t.priority, type: t.type || 'task',
-      dueDate: t.dueDate, isRecurring: !!t.isRecurring, recurringIntervalDays: t.recurringIntervalDays,
-      completedAt: t.completedAt, createdAt: t.createdAt, notes: t.notes || ''
-    };
-  }
-
-  function mergeVaultData() {
-    var localById = {};
-    state.tasks.forEach(function (t) { localById[String(t.id)] = t; });
-    var merged = [];
-    var seen = {};
-
-    (state.vault.tasksRaw || []).forEach(function (vt) {
-      var key = String(vt.id);
-      seen[key] = true;
-      if (state.vault.pendingTaskIds[key] && localById[key]) { merged.push(localById[key]); return; }
-      var prev = localById[key];
-      merged.push({
-        id: vt.id, title: vt.title, priority: vt.priority, type: vt.type || 'task',
-        dueDate: vt.dueDate, isRecurring: !!vt.isRecurring, recurringIntervalDays: vt.recurringIntervalDays,
-        completedAt: vt.completedAt, createdAt: vt.createdAt, notes: vt.notes || '',
-        requiredContexts: (prev && prev.requiredContexts) || [],
-        lastRejectedAt: (prev && prev.lastRejectedAt) || null,
-        source: 'tasks'
-      });
-    });
-
-    (state.vault.vehicleRaw || []).forEach(function (vm) {
-      var key = 'veh:' + vm.id;
-      seen[key] = true;
-      if (state.vault.pendingVehicleIds[String(vm.id)] && localById[key]) { merged.push(localById[key]); return; }
-      var prev = localById[key];
-      var due = vm.lastCompletedAt ? addDays(vm.lastCompletedAt, vm.intervalDays) : null;
-      merged.push({
-        id: key, title: vm.name, priority: 'MEDIUM', type: 'maintenance',
-        dueDate: due, isRecurring: true, recurringIntervalDays: vm.intervalDays,
-        completedAt: null, createdAt: null, notes: vm.notes || '',
-        requiredContexts: (prev && prev.requiredContexts) || ['Car'],
-        lastRejectedAt: (prev && prev.lastRejectedAt) || null,
-        source: 'vehicle', vehicleId: vm.id
-      });
-    });
-
-    state.tasks.forEach(function (t) { if (t.source === 'local' && !seen[String(t.id)]) merged.push(t); });
-
-    if (state.benchmarkId && !merged.some(function (t) { return t.id === state.benchmarkId; })) state.benchmarkId = null;
-    if (currentCandidateId && !merged.some(function (t) { return t.id === currentCandidateId; })) currentCandidateId = null;
-
-    state.tasks = merged;
-  }
-
-  function pullVault() {
-    if (!settings) return Promise.resolve();
-    vaultRuntime.syncing = true;
-    renderVaultStatus();
-
-    var tasksP = ghGetFile(settings.tasksPath).then(function (r) {
-      if (!r.json || !Array.isArray(r.json.tasks)) throw { message: 'tasks.json did not contain a "tasks" array' };
-      state.vault.tasksRaw = r.json.tasks;
-      state.vault.tasksSha = r.sha;
-      vaultRuntime.connected = true;
-      vaultRuntime.lastError = null;
-    }).catch(function (err) {
-      vaultRuntime.connected = false;
-      vaultRuntime.lastError = { scope: 'tasks', err: err };
-    });
-
-    var vehicleP = settings.vehiclePath ? ghGetFile(settings.vehiclePath).then(function (r) {
-      if (!r.json || !Array.isArray(r.json.vehicleMaintenance)) throw { message: 'vehicle file did not contain a "vehicleMaintenance" array' };
-      state.vault.vehicleRaw = r.json.vehicleMaintenance;
-      state.vault.vehicleSha = r.sha;
-    }).catch(function (err) {
-      if (!vaultRuntime.lastError) vaultRuntime.lastError = { scope: 'vehicle', err: err };
-    }) : Promise.resolve();
-
-    return Promise.all([tasksP, vehicleP]).then(function () {
-      mergeVaultData();
-      state.vault.lastSyncedAt = new Date().toISOString();
-      persist();
-      vaultRuntime.syncing = false;
-      renderVaultStatus();
-      render();
-      var listView = document.getElementById('view-list');
-      if (listView && listView.classList.contains('active')) renderListView();
-    });
-  }
-
-  var flushTimer = null;
-  function queueWriteBack(kind, id) {
-    if (kind === 'tasks') state.vault.pendingTaskIds[String(id)] = true;
-    if (kind === 'vehicle') state.vault.pendingVehicleIds[String(id)] = true;
-    persist();
-    renderVaultStatus();
-    clearTimeout(flushTimer);
-    flushTimer = setTimeout(flushWriteBack, SYNC_DEBOUNCE_MS);
-  }
-
-  function flushWriteBack() {
-    if (!settings) return;
-    if (vaultRuntime.syncing) { clearTimeout(flushTimer); flushTimer = setTimeout(flushWriteBack, SYNC_DEBOUNCE_MS); return; }
-    var tasksIds = Object.keys(state.vault.pendingTaskIds);
-    var vehicleIds = Object.keys(state.vault.pendingVehicleIds);
-    if (!tasksIds.length && !vehicleIds.length) return;
-
-    vaultRuntime.syncing = true;
-    renderVaultStatus();
-    var work = Promise.resolve();
-
-    if (tasksIds.length) {
-      if (!state.vault.tasksRaw || !state.vault.tasksSha) {
-        vaultRuntime.lastError = { scope: 'tasks-write', err: { message: 'tasks.json not loaded yet — will retry after next sync' } };
-      } else {
-        var byId = {};
-        state.vault.tasksRaw.forEach(function (vt) { byId[String(vt.id)] = vt; });
-        tasksIds.forEach(function (key) {
-          var chainTask = state.tasks.find(function (t) { return String(t.id) === key; });
-          if (chainTask) byId[key] = toVaultTaskShape(chainTask);
-        });
-        var order = state.vault.tasksRaw.map(function (vt) { return String(vt.id); });
-        tasksIds.forEach(function (key) { if (order.indexOf(key) === -1) order.push(key); });
-        var list = order.map(function (key) { return byId[key]; }).filter(Boolean);
-        work = work.then(function () {
-          return ghPutFile(settings.tasksPath, { exportedAt: new Date().toISOString(), tasks: list }, state.vault.tasksSha,
-            'Chain: sync ' + tasksIds.length + ' task update(s)')
-            .then(function () { state.vault.pendingTaskIds = {}; })
-            .catch(function (err) { vaultRuntime.lastError = { scope: 'tasks-write', err: err }; });
-        });
-      }
-    }
-
-    if (vehicleIds.length) {
-      if (!state.vault.vehicleRaw || !state.vault.vehicleSha) {
-        vaultRuntime.lastError = { scope: 'vehicle-write', err: { message: 'vehicle file not loaded yet — will retry after next sync' } };
-      } else {
-        work = work.then(function () {
-          var list = state.vault.vehicleRaw.map(function (vm) {
-            if (vehicleIds.indexOf(String(vm.id)) === -1) return vm;
-            var chainTask = state.tasks.find(function (t) { return t.source === 'vehicle' && t.vehicleId === vm.id; });
-            return { id: vm.id, name: vm.name, intervalDays: vm.intervalDays,
-              lastCompletedAt: (chainTask && chainTask._vehicleLastCompletedAt) || vm.lastCompletedAt, notes: vm.notes || '' };
-          });
-          return ghPutFile(settings.vehiclePath, { exportedAt: new Date().toISOString(), vehicleMaintenance: list }, state.vault.vehicleSha,
-            'Chain: log ' + vehicleIds.length + ' vehicle maintenance completion(s)')
-            .then(function () { state.vault.pendingVehicleIds = {}; })
-            .catch(function (err) { vaultRuntime.lastError = { scope: 'vehicle-write', err: err }; });
-        });
-      }
-    }
-
-    work.then(function () {
-      persist();
-      return pullVault();
-    }).then(function () {
-      vaultRuntime.syncing = false;
-      renderVaultStatus();
-      if (vaultRuntime.lastError) toast('Vault sync failed — see Diagnostics in Settings');
-    });
-  }
-
-  function vaultStatusText() {
-    if (!settings) return 'Not connected';
-    if (vaultRuntime.syncing) return 'Syncing…';
-    if (!vaultRuntime.connected) return 'Connection error';
-    if (vaultDirty()) return 'Changes pending sync';
-    if (state.vault.lastSyncedAt) return 'Synced ' + new Date(state.vault.lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    return 'Connected';
-  }
-
-  function renderVaultStatus() {
-    var pill = document.getElementById('vault-status');
-    if (pill) pill.textContent = vaultStatusText();
-    var line = document.getElementById('vault-status-line');
-    if (line) line.textContent = vaultStatusText() + (settings ? ' · ' + settings.owner + '/' + settings.repo : '');
-    var retryBtn = document.getElementById('vault-retry-btn');
-    if (retryBtn) retryBtn.style.display = vaultDirty() ? '' : 'none';
-    var diag = document.getElementById('vault-diagnostics');
-    if (diag) {
-      diag.textContent = JSON.stringify({
-        connected: vaultRuntime.connected,
-        configured: !!settings,
-        repo: settings ? settings.owner + '/' + settings.repo + '@' + (settings.branch || 'main') : null,
-        lastError: vaultRuntime.lastError,
-        pendingTaskIds: Object.keys(state.vault.pendingTaskIds),
-        pendingVehicleIds: Object.keys(state.vault.pendingVehicleIds),
-        lastSyncedAt: state.vault.lastSyncedAt
-      }, null, 2);
-    }
-  }
-
-  // ---------- chain mechanic ----------
-
-  function activeContextNames() { return state.contexts.filter(function (c) { return c.active; }).map(function (c) { return c.name; }); }
-
-  function daysUntilDue(d) {
-    if (!d) return null;
-    var today = new Date(); today.setHours(0, 0, 0, 0);
-    var due = new Date(d + 'T00:00:00');
-    return Math.round((due - today) / 86400000);
-  }
-
-  function withinDueWindow(t) { var days = daysUntilDue(t.dueDate); return days === null || days <= DUE_WINDOW_DAYS; }
-
-  function taskEligible(t, activeNames) {
-    if (t.completedAt) return false;
-    if (t.id === state.benchmarkId) return false;
-    if (cantIds[t.id]) return false;
-    if (!withinDueWindow(t)) return false;
-    if (t.lastRejectedAt && (Date.now() - new Date(t.lastRejectedAt).getTime()) < COOLDOWN_MS) return false;
-    var req = t.requiredContexts || [];
-    for (var i = 0; i < req.length; i++) if (activeNames.indexOf(req[i]) === -1) return false;
-    return true;
-  }
-
-  function openTasks() { return state.tasks.filter(function (t) { return !t.completedAt; }); }
-  function eligiblePool() { var names = activeContextNames(); return state.tasks.filter(function (t) { return taskEligible(t, names); }); }
-
-  function pickFrom(pool) {
-    if (!pool.length) return null;
-    var unseen = pool.filter(function (t) { return !lastShownIds[t.id]; });
-    var from = unseen.length ? unseen : pool;
-    return from[Math.floor(Math.random() * from.length)];
-  }
-
-  function ensureBenchmark() {
-    if (state.benchmarkId) return;
-    var names = activeContextNames();
-    var pool = state.tasks.filter(function (t) { return !t.completedAt && taskEligibleIgnoringBenchmark(t, names); });
-    var pick = pickFrom(pool);
-    if (pick) { state.benchmarkId = pick.id; lastShownIds[pick.id] = true; }
-  }
-
-  function taskEligibleIgnoringBenchmark(t, names) {
-    if (t.completedAt) return false;
-    if (!withinDueWindow(t)) return false;
-    var req = t.requiredContexts || [];
-    for (var i = 0; i < req.length; i++) if (names.indexOf(req[i]) === -1) return false;
-    return true;
-  }
-
-  function benchmark() { return state.tasks.find(function (t) { return t.id === state.benchmarkId; }) || null; }
-  function pushTrail(type) { state.trail.push({ type: type, at: new Date().toISOString() }); }
-
   function toast(msg) {
     var el = document.getElementById('toast');
     el.textContent = msg;
@@ -1229,475 +545,1134 @@
     toast._t = setTimeout(function () { el.classList.remove('show'); }, 2200);
   }
 
-  function nextCandidate() {
-    ensureBenchmark();
-    var pool = eligiblePool();
-    var cand = pickFrom(pool);
-    currentCandidateId = cand ? cand.id : null;
-    if (cand) lastShownIds[cand.id] = true;
-    render();
+  // ---------- Thompson sampling core (mirrors forster_core.py) ----------
+
+  function coerceCount(v) {
+    var n = parseInt(v, 10);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return n;
   }
-
-  function completeTask(t) {
-    if (t.source === 'vehicle') {
-      var days = t.recurringIntervalDays || 180;
-      t._vehicleLastCompletedAt = todayISO();
-      t.dueDate = addDays(todayISO(), days);
-      t.lastRejectedAt = new Date().toISOString();
-      queueWriteBack('vehicle', t.vehicleId);
-    } else {
-      t.completedAt = new Date().toISOString();
-      if (t.source === 'tasks' || t.source === 'local') queueWriteBack('tasks', t.id);
-    }
-  }
-
-  function doYes() {
-    var cand = state.tasks.find(function (t) { return t.id === currentCandidateId; });
-    if (!cand) return;
-    pushTrail('yes'); state.benchmarkId = cand.id; passStreak = 0; persist(); animateThenNext();
-  }
-  function doNo() {
-    var cand = state.tasks.find(function (t) { return t.id === currentCandidateId; });
-    if (!cand) return;
-    cand.lastRejectedAt = new Date().toISOString(); passStreak++; pushTrail('no'); persist(); animateThenNext();
-  }
-  function doCant() {
-    var cand = state.tasks.find(function (t) { return t.id === currentCandidateId; });
-    if (!cand) return;
-    cantIds[cand.id] = true; passStreak++; pushTrail('cant'); persist(); animateThenNext();
-  }
-  function animateThenNext() {
-    var stage = document.getElementById('focus-stage');
-    var candEl = stage.querySelector('.card.candidate');
-    if (candEl && !prefersReducedMotion()) { candEl.classList.add('exit'); setTimeout(nextCandidate, 150); }
-    else nextCandidate();
-  }
-  function doDone() {
-    var b = benchmark();
-    if (!b) return;
-    completeTask(b); pushTrail('done'); state.benchmarkId = null; cantIds = {}; passStreak = 0; persist();
-    toast(b.source === 'vehicle' ? 'Logged: ' + b.title : 'Done: ' + b.title);
-    nextCandidate();
-  }
-  function doDislodge() {
-    var b = benchmark();
-    if (!b) return;
-    pushTrail('dislodge'); state.benchmarkId = null; persist(); nextCandidate();
-  }
-  function doNudgeDone() { doDone(); }
-  function doNudgeContinue() { passStreak = 0; render(); }
-  function prefersReducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-
-  // ---------- rendering ----------
-
-  function fmtDue(d) {
-    var days = daysUntilDue(d);
-    if (days === null) return null;
-    if (days < 0) return 'overdue';
-    if (days === 0) return 'due today';
-    if (days === 1) return 'due tomorrow';
-    if (days < 7) return 'due in ' + days + 'd';
-    return 'due ' + d;
-  }
-
-  function contextChips(reqContexts, activeNames) {
-    if (!reqContexts || !reqContexts.length) return '';
-    return '<div class="ctx-list">' + reqContexts.map(function (c) {
-      var ok = activeNames.indexOf(c) !== -1;
-      return '<span class="chip ro" style="opacity:' + (ok ? '1' : '.5') + '">' + esc(c) + '</span>';
-    }).join('') + '</div>';
-  }
-
-  function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-
-  function renderContexts() {
-    var names = activeContextNames();
-    var wrap = document.getElementById('contexts-chips');
-    wrap.innerHTML = state.contexts.map(function (c) {
-      return '<button type="button" class="chip' + (c.active ? ' active' : '') + '" data-ctx="' + esc(c.name) + '">' + esc(c.name) + '</button>';
-    }).join('');
-    document.getElementById('contexts-count').textContent = names.length + ' / ' + state.contexts.length + ' active';
-    Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (btn) {
-      btn.addEventListener('click', function () {
-        var name = btn.getAttribute('data-ctx');
-        var ctx = state.contexts.find(function (c) { return c.name === name; });
-        ctx.active = !ctx.active;
-        cantIds = {};
-        persist(); renderContexts(); nextCandidate();
-      });
-    });
-  }
-
-  function renderTrail() {
-    var el = document.getElementById('trail');
-    var items = state.trail.slice(-24);
-    if (!items.length) { el.innerHTML = '<span class="stub">no chain yet today</span>'; return; }
-    el.innerHTML = items.map(function (h) { return '<span class="dot ' + h.type + '" title="' + h.type + '"></span>'; }).join('');
-    el.scrollLeft = el.scrollWidth;
-  }
-
-  function render() {
-    renderContexts();
-    renderTrail();
-    var stage = document.getElementById('focus-stage');
-    var b = benchmark();
-    var names = activeContextNames();
-
-    if (!settings) {
-      stage.innerHTML = '<div class="empty-pool">Not connected yet — open Settings (⚙) to point Chain at your repo.</div>';
-      return;
-    }
-    if (!b) {
-      stage.innerHTML = '<div class="empty-pool">Nothing eligible right now — everything open is either context-blocked or not due within ' + DUE_WINDOW_DAYS + ' days. Flip on a context, or add a task in List.</div>';
-      return;
-    }
-
-    var cand = state.tasks.find(function (t) { return t.id === currentCandidateId; });
-    var html = '';
-    html += '<div class="card benchmark">' +
-      '<div class="eyebrow-row"><span class="eyebrow">Current pick</span><div class="badges">' + badges(b) + '</div></div>' +
-      '<div class="title">' + esc(b.title) + '</div>' +
-      (b.notes ? '<div class="notes">' + esc(b.notes) + '</div>' : '') +
-      contextChips(b.requiredContexts, names) +
-      '<div class="row-actions"><button class="action done" id="btn-done">Done</button><button class="action dislodge" id="btn-dislodge">Dislodge</button></div>' +
-    '</div>';
-
-    if (passStreak >= PASS_THRESHOLD) {
-      html += '<div class="nudge"><span>' + passStreak + ' in a row without a swap — probably just <strong>' + esc(b.title) + '</strong>?</span><button id="btn-nudge-done">Do it</button></div>';
-    }
-
-    if (cand) {
-      html += '<div class="prompt">Rather do this than &ldquo;' + esc(truncate(b.title, 40)) + '&rdquo;?</div>';
-      html += '<div class="card candidate enter">' +
-        '<div class="eyebrow-row"><span class="eyebrow">Next up</span><div class="badges">' + badges(cand) + '</div></div>' +
-        '<div class="title">' + esc(cand.title) + '</div>' +
-        (cand.notes ? '<div class="notes">' + esc(cand.notes) + '</div>' : '') +
-        contextChips(cand.requiredContexts, names) +
-        '<div class="decide-row"><button class="action yes" id="btn-yes">Yes, swap in</button><button class="action no" id="btn-no">No</button><button class="action cant" id="btn-cant">Can&rsquo;t</button></div>' +
-      '</div>';
-    } else {
-      html += '<div class="empty-pool">Nothing else fits right now. Flip on more contexts, or finish &ldquo;' + esc(truncate(b.title, 40)) + '&rdquo;.</div>';
-    }
-
-    stage.innerHTML = html;
-    var byId = function (id) { return document.getElementById(id); };
-    if (byId('btn-done')) byId('btn-done').addEventListener('click', doDone);
-    if (byId('btn-dislodge')) byId('btn-dislodge').addEventListener('click', doDislodge);
-    if (byId('btn-yes')) byId('btn-yes').addEventListener('click', doYes);
-    if (byId('btn-no')) byId('btn-no').addEventListener('click', doNo);
-    if (byId('btn-cant')) byId('btn-cant').addEventListener('click', doCant);
-    if (byId('btn-nudge-done')) byId('btn-nudge-done').addEventListener('click', doNudgeDone);
-  }
-
-  function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
-  function badges(t) {
-    var out = '';
-    var due = fmtDue(t.dueDate);
-    if (due) out += '<span class="badge due">' + due + '</span>';
-    if (t.priority === 'HIGH') out += '<span class="badge high">high</span>';
-    if (t.isRecurring) out += '<span class="badge recurring">recurring</span>';
-    return out;
-  }
-
-  // ---------- list view ----------
-
-  var newTaskContexts = {};
-  function renderListView() { renderAddFormContexts(); renderEditContexts(); renderTaskGroups(); }
-
-  function renderAddFormContexts() {
-    var wrap = document.getElementById('f-contexts');
-    wrap.innerHTML = state.contexts.map(function (c) {
-      return '<button type="button" class="chip' + (newTaskContexts[c.name] ? ' active' : '') + '" data-ctx="' + esc(c.name) + '">' + esc(c.name) + '</button>';
-    }).join('');
-    Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (btn) {
-      btn.addEventListener('click', function () {
-        var name = btn.getAttribute('data-ctx');
-        newTaskContexts[name] = !newTaskContexts[name];
-        renderAddFormContexts();
-      });
-    });
-  }
-
-  function renderEditContexts() {
-    var wrap = document.getElementById('edit-contexts-chips');
-    wrap.innerHTML = state.contexts.map(function (c) {
-      return '<span class="chip chip-x' + (c.active ? ' active' : '') + '" data-ctx="' + esc(c.name) + '">' + esc(c.name) + ' <span class="x" data-del="' + esc(c.name) + '">✕</span></span>';
-    }).join('');
-    Array.prototype.forEach.call(wrap.querySelectorAll('.chip-x'), function (chip) {
-      chip.addEventListener('click', function (e) {
-        var delName = e.target.getAttribute('data-del');
-        if (delName) {
-          e.stopPropagation();
-          state.contexts = state.contexts.filter(function (c) { return c.name !== delName; });
-          state.tasks.forEach(function (t) { t.requiredContexts = (t.requiredContexts || []).filter(function (c) { return c !== delName; }); });
-          persist(); renderListView(); render();
-          return;
-        }
-        var name = chip.getAttribute('data-ctx');
-        var ctx = state.contexts.find(function (c) { return c.name === name; });
-        ctx.active = !ctx.active;
-        persist(); renderEditContexts(); renderContexts();
-      });
-    });
-  }
-
-  function renderTaskGroups() {
-    var names = activeContextNames();
-    var groups = [['HIGH', 'High'], ['MEDIUM', 'Medium'], ['LOW', 'Low']];
-    var open = openTasks();
-    var html = '';
-    groups.forEach(function (g) {
-      var items = open.filter(function (t) { return t.priority === g[0]; });
-      if (!items.length) return;
-      html += '<div class="section-title">' + g[1] + '</div><div class="card" style="padding:2px 8px;">';
-      items.forEach(function (t) {
-        var due = fmtDue(t.dueDate);
-        html += '<div class="task-row" data-id="' + t.id + '">' +
-          '<button class="tick" data-done="' + t.id + '" aria-label="Mark done"></button>' +
-          '<div class="body"><div class="title">' + esc(t.title) + '</div><div class="meta">' +
-            (due ? '<span class="chip ro">' + due + '</span>' : '') +
-            (t.requiredContexts || []).map(function (c) { return '<span class="chip ro" style="opacity:' + (names.indexOf(c) !== -1 ? 1 : .5) + '">' + esc(c) + '</span>'; }).join('') +
-          '</div></div>' +
-          '<button class="del" data-del="' + t.id + '" aria-label="Remove" title="' +
-            (t.source === 'tasks' || t.source === 'vehicle' ? 'Hides from Chain until next vault refresh — does not delete from the vault' : 'Remove') +
-          '">🗑</button>' +
-        '</div>';
-      });
-      html += '</div>';
-    });
-    if (!open.length) html = '<div class="empty-pool">No open tasks. Add one above.</div>';
-    document.getElementById('task-groups').innerHTML = html;
-
-    Array.prototype.forEach.call(document.querySelectorAll('[data-done]'), function (btn) {
-      btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-done');
-        var t = state.tasks.find(function (x) { return String(x.id) === id; });
-        if (!t) return;
-        completeTask(t);
-        if (String(state.benchmarkId) === id) state.benchmarkId = null;
-        persist();
-        toast(t.source === 'vehicle' ? 'Logged: ' + t.title : 'Done: ' + t.title);
-        renderTaskGroups(); render();
-      });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.del[data-del]'), function (btn) {
-      btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-del');
-        state.tasks = state.tasks.filter(function (t) { return String(t.id) !== id; });
-        if (String(state.benchmarkId) === id) state.benchmarkId = null;
-        if (String(currentCandidateId) === id) currentCandidateId = null;
-        persist(); renderTaskGroups(); render();
-      });
-    });
-  }
-
-  // ---------- add form ----------
-
-  var selectedPriority = 'MEDIUM';
-  Array.prototype.forEach.call(document.querySelectorAll('#f-priority button'), function (btn) {
-    btn.addEventListener('click', function () {
-      selectedPriority = btn.getAttribute('data-p');
-      Array.prototype.forEach.call(document.querySelectorAll('#f-priority button'), function (b) {
-        b.classList.toggle('active', b === btn);
-        b.classList.remove('HIGH', 'MEDIUM', 'LOW');
-        if (b === btn) b.classList.add(selectedPriority);
-      });
-    });
-  });
-
-  document.getElementById('add-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var title = document.getElementById('f-title').value.trim();
-    if (!title) return;
-    var due = document.getElementById('f-due').value || null;
-    var notes = document.getElementById('f-notes').value.trim();
-    var contexts = Object.keys(newTaskContexts).filter(function (k) { return newTaskContexts[k]; });
-    var t = mk(title, selectedPriority, due, contexts);
-    t.notes = notes;
-    if (vaultRuntime.connected && settings) {
-      t.id = genVaultId();
-      state.tasks.push(t);
-      queueWriteBack('tasks', t.id);
-    } else {
-      state.tasks.push(t);
-    }
-    persist();
-    document.getElementById('add-form').reset();
-    newTaskContexts = {};
-    selectedPriority = 'MEDIUM';
-    Array.prototype.forEach.call(document.querySelectorAll('#f-priority button'), function (b) { b.classList.toggle('active', b.getAttribute('data-p') === 'MEDIUM'); });
-    renderListView(); render();
-    toast('Added: ' + title);
-  });
-
-  document.getElementById('add-context-btn').addEventListener('click', addContext);
-  document.getElementById('new-context').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addContext(); } });
-  function addContext() {
-    var input = document.getElementById('new-context');
-    var name = input.value.trim();
-    if (!name) return;
-    if (state.contexts.some(function (c) { return c.name.toLowerCase() === name.toLowerCase(); })) { input.value = ''; return; }
-    state.contexts.push({ name: name, active: true });
-    input.value = '';
-    persist(); renderListView(); render();
-  }
-
-  document.getElementById('reseed-btn').addEventListener('click', function () {
-    if (!settings) { toast('Not connected — open Settings'); return; }
-    toast('Refreshing from vault…');
-    pullVault().then(function () { toast('Refreshed from vault'); });
-  });
-  document.getElementById('vault-retry-btn').addEventListener('click', function () {
-    vaultRuntime.lastError = null;
-    flushWriteBack();
-  });
-
-  // ---------- settings form ----------
-
-  function fillSettingsForm() {
-    var s = settings || {};
-    document.getElementById('s-token').value = s.token || '';
-    document.getElementById('s-owner').value = s.owner || '';
-    document.getElementById('s-repo').value = s.repo || '';
-    document.getElementById('s-branch').value = s.branch || 'main';
-    document.getElementById('s-tasks-path').value = s.tasksPath || '';
-    document.getElementById('s-vehicle-path').value = s.vehiclePath || '';
-  }
-
-  function readSettingsForm() {
+  function normalizeScoreEntry(raw) {
+    raw = raw || {};
     return {
-      token: document.getElementById('s-token').value.trim(),
-      owner: document.getElementById('s-owner').value.trim(),
-      repo: document.getElementById('s-repo').value.trim(),
-      branch: document.getElementById('s-branch').value.trim() || 'main',
-      tasksPath: document.getElementById('s-tasks-path').value.trim(),
-      vehiclePath: document.getElementById('s-vehicle-path').value.trim()
+      yes: coerceCount(raw.yes),
+      no: coerceCount(raw.no),
+      cant: coerceCount(raw.cant),
+      last_seen: typeof raw.last_seen === 'string' ? raw.last_seen : null
+    };
+  }
+  function meanEstimate(entry) {
+    var e = normalizeScoreEntry(entry);
+    return (e.yes + 1) / (e.yes + e.no + 2);
+  }
+  // Gamma(k,1) for integer k via the Erlang sum-of-exponentials trick — no library needed.
+  function gammaSampleInt(k) {
+    var sum = 0;
+    for (var i = 0; i < k; i++) {
+      var u = Math.random();
+      if (u <= 0) u = 1e-12;
+      sum += -Math.log(u);
+    }
+    return sum;
+  }
+  function thompsonSample(entry) {
+    var e = normalizeScoreEntry(entry);
+    var a = e.yes + 1, b = e.no + 1;
+    var x = gammaSampleInt(a), y = gammaSampleInt(b);
+    return x / (x + y);
+  }
+
+  function isAsleep(task, today) {
+    var start = task.start;
+    if (!isPlausibleDateStr(start)) return false; // fails open — bad data never hides work
+    return start > today;
+  }
+
+  function daysUntilDue(due) {
+    if (!isPlausibleDateStr(due)) return null;
+    return daysBetween(todayISO(), due);
+  }
+  function dueClass(due) {
+    var d = daysUntilDue(due);
+    if (d === null) return '';
+    if (d < 0) return 'due-overdue';
+    if (d <= 3) return 'due-soon';
+    return '';
+  }
+
+  // ---------- settings ----------
+
+  function defaultSettings() { return null; }
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(SETTINGS_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+  function clearSettings() { localStorage.removeItem(SETTINGS_KEY); }
+
+  function derivedPaths(tasksPath) {
+    var dir = tasksPath.includes('/') ? tasksPath.slice(0, tasksPath.lastIndexOf('/') + 1) : '';
+    return {
+      scoresPath: dir + 'forster-scores.json',
+      chainPath: dir + 'forster-chain.json',
+      metaPath: dir + 'forster-meta.json'
     };
   }
 
-  document.getElementById('setup-test-btn').addEventListener('click', function () {
-    var candidate = readSettingsForm();
-    var resultEl = document.getElementById('setup-test-result');
-    resultEl.textContent = 'Testing…';
-    resultEl.className = 'setup-test-result';
-    var prevSettings = settings;
-    settings = candidate;
-    ghGetFile(candidate.tasksPath).then(function (r) {
-      settings = prevSettings;
-      resultEl.textContent = 'OK — found ' + (r.json.tasks ? r.json.tasks.length : 0) + ' task(s) at ' + candidate.owner + '/' + candidate.repo + '/' + candidate.tasksPath;
-      resultEl.className = 'setup-test-result ok';
-    }).catch(function (err) {
-      settings = prevSettings;
-      resultEl.textContent = 'Failed: ' + (err && err.message ? err.message : 'unknown error');
-      resultEl.className = 'setup-test-result err';
+  // ---------- app state ----------
+
+  var settings = loadSettings();
+  var state = {
+    tasks: [],       // merged canonical tasks (tasks.json + vehicle pseudo-tasks + meta overlay)
+    scores: {},       // taskId -> {yes,no,cant,last_seen}
+    chainDoc: { date: todayISO(), chain: [], aside: {} },
+    metaDoc: {},      // taskId -> {comments, start, blocked_by, waiting_on, effort}
+    reviewed: 0,      // in-memory nudge counter, resets on Yes / reload
+    setAsideThisSession: {}, // superset convenience mirror of chainDoc.aside
+    filters: { type: null, priority: null, effort: null, hideBlocked: false, hideWaiting: false, startedOnly: false, q: '' },
+    view: 'review',   // 'review' | 'chain' | 'settings'
+    deferOpenFor: null,
+    _deferPending: null,
+    currentCandidateId: null,
+    lastShownIds: {},
+    carriedFrom: null,
+    dropped: [], slept: [],
+    busy: false
+  };
+
+  var vaultRuntime = {
+    connected: false,
+    pulling: false,
+    lastError: null,
+    sha: { tasks: null, vehicle: null, scores: null, chain: null, meta: null },
+    raw: { tasksRaw: null, vehicleRaw: null }
+  };
+
+  var pendingWrite = { tasks: false, vehicle: {}, scores: false, chain: false, meta: false };
+  var writeTimer = null;
+
+  // ---------- GitHub Contents API ----------
+
+  function ghHeaders() {
+    return {
+      Authorization: 'Bearer ' + settings.token,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': API_VERSION
+    };
+  }
+  function ghContentsUrl(path, withRef) {
+    var segs = path.split('/').map(encodeURIComponent).join('/');
+    var url = 'https://api.github.com/repos/' + settings.owner + '/' + settings.repo + '/contents/' + segs;
+    if (withRef) url += '?ref=' + encodeURIComponent(settings.branch);
+    return url;
+  }
+  function ghError(status, body) {
+    var msg = (body && body.message) || ('HTTP ' + status);
+    return { status: status, message: msg };
+  }
+  async function ghGetFile(path) {
+    var res = await fetch(ghContentsUrl(path, true), { headers: ghHeaders() });
+    if (res.status === 404) return null;
+    var body = await res.json().catch(function () { return null; });
+    if (!res.ok) throw ghError(res.status, body);
+    var json = JSON.parse(b64DecodeUnicode(body.content.replace(/\n/g, '')));
+    return { json: json, sha: body.sha };
+  }
+  async function ghPutFile(path, obj, sha, message) {
+    var body = {
+      message: message,
+      content: b64EncodeUnicode(JSON.stringify(obj, null, 2)),
+      branch: settings.branch
+    };
+    if (sha) body.sha = sha;
+    var res = await fetch(ghContentsUrl(path, false), {
+      method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHeaders()),
+      body: JSON.stringify(body)
+    });
+    var respBody = await res.json().catch(function () { return null; });
+    if (!res.ok) throw ghError(res.status, respBody);
+    return respBody.content.sha;
+  }
+
+  // Conflict-safe write: on 409/422 (stale sha), re-fetch, let `merge` reconcile onto the
+  // fresh remote copy, and retry once. There's no local file lock here (unlike the work
+  // system) — two devices writing near-simultaneously is the failure mode this guards against.
+  async function ghPutWithMerge(path, localObj, shaKey, message, merge) {
+    var sha = vaultRuntime.sha[shaKey];
+    try {
+      var newSha = await ghPutFile(path, localObj, sha, message);
+      vaultRuntime.sha[shaKey] = newSha;
+      return localObj;
+    } catch (err) {
+      if (err.status === 409 || err.status === 422) {
+        var fresh = await ghGetFile(path);
+        var merged = fresh ? merge(localObj, fresh.json) : localObj;
+        var retrySha = await ghPutFile(path, merged, fresh ? fresh.sha : null, message);
+        vaultRuntime.sha[shaKey] = retrySha;
+        toast('Merged a concurrent change from another device.');
+        return merged;
+      }
+      throw err;
+    }
+  }
+
+  function mergeScores(local, remote) {
+    var out = Object.assign({}, remote);
+    Object.keys(local).forEach(function (id) {
+      var l = normalizeScoreEntry(local[id]), r = normalizeScoreEntry(out[id]);
+      out[id] = {
+        yes: Math.max(l.yes, r.yes), no: Math.max(l.no, r.no), cant: Math.max(l.cant, r.cant),
+        last_seen: (l.last_seen || '') > (r.last_seen || '') ? l.last_seen : r.last_seen
+      };
+    });
+    return out;
+  }
+  function mergeChainDoc(local, remote) {
+    return (local.date >= (remote.date || '')) ? local : remote;
+  }
+  function mergeMeta(local, remote) {
+    var out = Object.assign({}, remote);
+    Object.keys(local).forEach(function (id) {
+      var l = local[id] || {}, r = out[id] || {};
+      var comments = (r.comments || []).slice();
+      (l.comments || []).forEach(function (c) {
+        var dup = comments.some(function (rc) { return rc.at === c.at && rc.body === c.body; });
+        if (!dup) comments.push(c);
+      });
+      out[id] = {
+        comments: comments,
+        start: l.start != null ? l.start : (r.start != null ? r.start : null),
+        blocked_by: l.blocked_by != null ? l.blocked_by : (r.blocked_by != null ? r.blocked_by : null),
+        waiting_on: l.waiting_on != null ? l.waiting_on : (r.waiting_on != null ? r.waiting_on : null),
+        effort: l.effort != null ? l.effort : (r.effort != null ? r.effort : null)
+      };
+    });
+    return out;
+  }
+
+  function queueWrite(kind, vehicleId) {
+    pendingWrite[kind] = true;
+    if (kind === 'vehicle' && vehicleId) pendingWrite.vehicle[vehicleId] = true;
+    clearTimeout(writeTimer);
+    writeTimer = setTimeout(flushWriteBack, SYNC_DEBOUNCE_MS);
+  }
+
+  var flushing = false;
+  async function flushWriteBack() {
+    if (!vaultRuntime.connected) return;
+    if (flushing) { writeTimer = setTimeout(flushWriteBack, 400); return; }
+    flushing = true;
+    try {
+      if (pendingWrite.tasks || Object.keys(pendingWrite.vehicle).length) {
+        await writeTasksAndVehicle();
+        pendingWrite.tasks = false; pendingWrite.vehicle = {};
+      }
+      if (pendingWrite.scores) {
+        state.scores = await ghPutWithMerge(settings.scoresPath, state.scores, 'scores', 'Chain: sync scores', mergeScores);
+        pendingWrite.scores = false;
+      }
+      if (pendingWrite.chain) {
+        state.chainDoc = await ghPutWithMerge(settings.chainPath, state.chainDoc, 'chain', 'Chain: sync chain', mergeChainDoc);
+        pendingWrite.chain = false;
+      }
+      if (pendingWrite.meta) {
+        state.metaDoc = await ghPutWithMerge(settings.metaPath, state.metaDoc, 'meta', 'Chain: sync comments/defer', mergeMeta);
+        pendingWrite.meta = false;
+      }
+      vaultRuntime.lastError = null;
+    } catch (err) {
+      vaultRuntime.lastError = err;
+      toast('Vault sync failed — see Diagnostics in Settings');
+    } finally {
+      flushing = false;
+      render();
+    }
+  }
+
+  function toVaultTaskShape(t) {
+    return {
+      id: t.id, title: t.title, priority: t.priority, type: t.type, dueDate: t.dueDate,
+      isRecurring: t.isRecurring, recurringIntervalDays: t.recurringIntervalDays,
+      completedAt: t.completedAt, createdAt: t.createdAt, notes: t.notes
+    };
+  }
+  async function writeTasksAndVehicle() {
+    var tasksOut = state.tasks.filter(function (t) { return t.source !== 'vehicle'; }).map(toVaultTaskShape);
+    var raw = Object.assign({}, vaultRuntime.raw.tasksRaw || {}, { exportedAt: new Date().toISOString(), tasks: tasksOut });
+    var sha = await ghPutFile(settings.tasksPath, raw, vaultRuntime.sha.tasks, 'Chain: sync ' + tasksOut.length + ' task update(s)');
+    vaultRuntime.sha.tasks = sha;
+    vaultRuntime.raw.tasksRaw = raw;
+
+    if (settings.vehiclePath && Object.keys(pendingWrite.vehicle).length) {
+      var vehOut = state.tasks.filter(function (t) { return t.source === 'vehicle'; }).map(function (t) {
+        return {
+          id: t.vehicleId, name: t.title, intervalDays: t.recurringIntervalDays,
+          lastCompletedAt: t._vehicleLastCompletedAt || null, notes: t.notes || ''
+        };
+      });
+      var vraw = Object.assign({}, vaultRuntime.raw.vehicleRaw || {}, { exportedAt: new Date().toISOString(), vehicleMaintenance: vehOut });
+      var vsha = await ghPutFile(settings.vehiclePath, vraw, vaultRuntime.sha.vehicle, 'Chain: log ' + Object.keys(pendingWrite.vehicle).length + ' vehicle maintenance completion(s)');
+      vaultRuntime.sha.vehicle = vsha;
+      vaultRuntime.raw.vehicleRaw = vraw;
+    }
+    // always re-pull to keep sha fresh for the next write, same as before
+    await pullVault();
+  }
+
+  async function pullVault() {
+    vaultRuntime.pulling = true;
+    try {
+      var tasksFile = await ghGetFile(settings.tasksPath);
+      if (!tasksFile) throw ghError(404, { message: 'tasks file missing' });
+      vaultRuntime.sha.tasks = tasksFile.sha;
+      vaultRuntime.raw.tasksRaw = tasksFile.json;
+
+      var vehicleFile = null;
+      if (settings.vehiclePath) {
+        vehicleFile = await ghGetFile(settings.vehiclePath);
+        if (vehicleFile) { vaultRuntime.sha.vehicle = vehicleFile.sha; vaultRuntime.raw.vehicleRaw = vehicleFile.json; }
+      }
+      var scoresFile = await ghGetFile(settings.scoresPath);
+      state.scores = scoresFile ? scoresFile.json : {};
+      vaultRuntime.sha.scores = scoresFile ? scoresFile.sha : null;
+
+      var chainFile = await ghGetFile(settings.chainPath);
+      state.chainDoc = chainFile ? chainFile.json : { date: todayISO(), chain: [], aside: {} };
+      vaultRuntime.sha.chain = chainFile ? chainFile.sha : null;
+
+      var metaFile = await ghGetFile(settings.metaPath);
+      state.metaDoc = metaFile ? metaFile.json : {};
+      vaultRuntime.sha.meta = metaFile ? metaFile.sha : null;
+
+      mergeVaultData(tasksFile.json, vehicleFile ? vehicleFile.json : null);
+      vaultRuntime.connected = true;
+      vaultRuntime.lastError = null;
+    } catch (err) {
+      vaultRuntime.lastError = err;
+      toast('Vault sync failed — see Diagnostics in Settings');
+    } finally {
+      vaultRuntime.pulling = false;
+      render();
+    }
+  }
+
+  function mergeVaultData(tasksRaw, vehicleRaw) {
+    var list = (tasksRaw.tasks || []).map(function (t) {
+      return Object.assign({ notes: '', isRecurring: false, recurringIntervalDays: null, completedAt: null }, t, { source: 'tasks' });
+    });
+    if (vehicleRaw && vehicleRaw.vehicleMaintenance) {
+      vehicleRaw.vehicleMaintenance.forEach(function (vm) {
+        list.push({
+          id: 'veh:' + vm.id, title: vm.name, priority: 'MEDIUM', type: 'maintenance',
+          dueDate: vm.lastCompletedAt ? addDays(vm.lastCompletedAt.slice(0, 10), vm.intervalDays) : null,
+          isRecurring: true, recurringIntervalDays: vm.intervalDays, completedAt: null,
+          createdAt: null, notes: vm.notes || '', source: 'vehicle', vehicleId: vm.id
+        });
+      });
+    }
+    list.forEach(function (t) {
+      var m = state.metaDoc[String(t.id)] || {};
+      t.comments = m.comments || [];
+      t.start = m.start != null ? m.start : null;
+      t.blocked_by = m.blocked_by != null ? m.blocked_by : null;
+      t.waiting_on = m.waiting_on != null ? m.waiting_on : null;
+      t.effort = m.effort != null ? m.effort : null;
+    });
+    state.tasks = list;
+  }
+
+  function metaFor(id) {
+    var key = String(id);
+    if (!state.metaDoc[key]) state.metaDoc[key] = { comments: [], start: null, blocked_by: null, waiting_on: null, effort: null };
+    return state.metaDoc[key];
+  }
+  function taskById(id) { return state.tasks.find(function (t) { return String(t.id) === String(id); }); }
+  // metaDoc is the source of truth for start/blocked_by/waiting_on/effort/comments; the merged
+  // task objects only hold a snapshot copy taken at merge time. Any write through metaFor(id)
+  // must call this afterward, or isAsleep()/filters/chips keep reading the stale copy until the
+  // next full pullVault().
+  function syncMetaToTask(id) {
+    var t = taskById(id), m = state.metaDoc[String(id)];
+    if (!t || !m) return;
+    t.start = m.start != null ? m.start : null;
+    t.blocked_by = m.blocked_by != null ? m.blocked_by : null;
+    t.waiting_on = m.waiting_on != null ? m.waiting_on : null;
+    t.effort = m.effort != null ? m.effort : null;
+    t.comments = m.comments || [];
+  }
+
+  // ---------- eligibility / filters / drawing ----------
+
+  function activePool() {
+    return state.tasks.filter(function (t) { return !t.completedAt; });
+  }
+  function matchesFilters(t, f) {
+    if (f.type && t.type !== f.type) return false;
+    if (f.priority && t.priority !== f.priority) return false;
+    if (f.effort && t.effort !== f.effort) return false;
+    if (f.hideBlocked && t.blocked_by) return false;
+    if (f.hideWaiting && t.waiting_on) return false;
+    if (f.startedOnly && !t.start) return false;
+    if (f.q) {
+      var q = f.q.toLowerCase();
+      var hay = (t.title + ' ' + (t.notes || '') + ' ' + String(t.id)).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  }
+  function eligiblePool() {
+    var today = todayISO();
+    var chainIds = {}; state.chainDoc.chain.forEach(function (id) { chainIds[id] = true; });
+    var asideIds = state.chainDoc.aside || {};
+    return activePool().filter(function (t) {
+      if (chainIds[t.id]) return false;
+      if (asideIds[t.id] != null) return false;
+      if (isAsleep(t, today)) return false;
+      if (!matchesFilters(t, state.filters)) return false;
+      return true;
+    });
+  }
+  function pickCandidate() {
+    var pool = eligiblePool();
+    if (!pool.length) return null;
+    var unseen = pool.filter(function (t) { return !state.lastShownIds[t.id]; });
+    var draw = unseen.length ? unseen : pool;
+    var best = null, bestScore = -1;
+    draw.forEach(function (t) {
+      var s = thompsonSample(state.scores[t.id]);
+      if (s > bestScore) { bestScore = s; best = t; }
+    });
+    return best;
+  }
+  function nextCandidate() {
+    var cand = pickCandidate();
+    state.currentCandidateId = cand ? cand.id : null;
+    if (cand) state.lastShownIds[cand.id] = true;
+  }
+
+  // ---------- chain reconciliation ----------
+
+  function reconcileChain() {
+    var today = todayISO();
+    var doc = state.chainDoc;
+    var carriedFrom = null;
+    if (doc.date !== today) { carriedFrom = doc.date; doc.aside = {}; doc.date = today; }
+
+    var byId = {}; state.tasks.forEach(function (t) { byId[t.id] = t; });
+    var seen = {}, chain = [], dropped = [], slept = [];
+    (doc.chain || []).forEach(function (id) {
+      if (seen[id]) return;
+      seen[id] = true;
+      var t = byId[id];
+      if (!t || t.completedAt) { dropped.push(id); return; }
+      if (isAsleep(t, today)) { slept.push(id); return; }
+      chain.push(id);
+    });
+    var aside = {};
+    Object.keys(doc.aside || {}).forEach(function (id) {
+      if (seen[id] && chain.indexOf(id) !== -1) return; // never both dotted and aside
+      var t = byId[id];
+      if (!t || t.completedAt) return;
+      if (isAsleep(t, today)) return;
+      aside[id] = doc.aside[id];
+    });
+
+    var changed = carriedFrom || dropped.length || slept.length ||
+      chain.length !== (doc.chain || []).length ||
+      Object.keys(aside).length !== Object.keys(doc.aside || {}).length;
+
+    doc.chain = chain; doc.aside = aside;
+    state.carriedFrom = carriedFrom;
+    state.dropped = dropped; state.slept = slept;
+    if (changed) queueWrite('chain');
+  }
+
+  // ---------- writeback actions ----------
+
+  function benchmarkTask() {
+    var chain = state.chainDoc.chain;
+    if (!chain.length) return null;
+    return taskById(chain[chain.length - 1]);
+  }
+
+  function decide(decision) {
+    var cand = taskById(state.currentCandidateId);
+    if (!cand) return;
+    var today = todayISO();
+    var entry = normalizeScoreEntry(state.scores[cand.id]);
+    if (decision === 'yes') {
+      state.chainDoc.chain.push(cand.id);
+      delete state.chainDoc.aside[cand.id];
+      metaFor(cand.id).start = today;
+      syncMetaToTask(cand.id);
+      entry.yes += 1;
+      state.reviewed = 0;
+      queueWrite('meta'); queueWrite('chain');
+    } else if (decision === 'no') {
+      entry.no += 1;
+      state.reviewed += 1;
+    } else if (decision === 'cant') {
+      entry.cant += 1;
+      state.chainDoc.aside[cand.id] = 'cant';
+      state.reviewed += 1;
+      queueWrite('chain');
+    }
+    entry.last_seen = nowISO();
+    state.scores[cand.id] = entry;
+    queueWrite('scores');
+    nextCandidate();
+    render();
+  }
+
+  function dislodge() {
+    var b = benchmarkTask();
+    if (!b) return;
+    state.chainDoc.chain.pop();
+    metaFor(b.id).start = null;
+    syncMetaToTask(b.id);
+    queueWrite('chain'); queueWrite('meta');
+    render();
+  }
+
+  function closeTask(id, opts) {
+    opts = opts || {};
+    var t = taskById(id);
+    if (!t) return;
+    if (t.source === 'vehicle') {
+      t._vehicleLastCompletedAt = todayISO();
+      t.dueDate = addDays(todayISO(), t.recurringIntervalDays || 180);
+      queueWrite('vehicle', t.vehicleId);
+    } else {
+      t.completedAt = new Date().toISOString();
+      queueWrite('tasks');
+    }
+    if (opts.cancel) {
+      metaFor(id).comments.push({ at: nowISO(), body: 'Cancelled via Chain review.', kind: 'note' });
+      queueWrite('meta');
+    }
+    if (opts.hours != null && opts.hours !== '') {
+      var snapped = Math.round(parseFloat(opts.hours) * 4) / 4;
+      if (Number.isFinite(snapped) && snapped > 0) {
+        metaFor(id).comments.push({ at: nowISO(), body: 'Actual effort: ' + snapped + 'h', kind: 'note' });
+        queueWrite('meta');
+      }
+    }
+    var idx = state.chainDoc.chain.indexOf(id);
+    if (idx !== -1) { state.chainDoc.chain.splice(idx, 1); queueWrite('chain'); }
+    delete state.chainDoc.aside[id];
+    metaFor(id).start = null;
+    syncMetaToTask(id);
+    state._lastClosed = id;
+    toast((opts.cancel ? 'Cancelled' : 'Done') + ' — Undo');
+    render();
+  }
+
+  function disposeCandidate(opts) {
+    var cand = taskById(state.currentCandidateId);
+    if (!cand) return;
+    closeTask(cand.id, Object.assign({}, opts, { hours: null }));
+    // dispose never bumps `reviewed` (not deliberation) — closeTask doesn't touch it, so nothing to undo here.
+    nextCandidate();
+    render();
+  }
+
+  function undoClose(id) {
+    var t = taskById(id);
+    if (!t) return;
+    if (t.source === 'vehicle') { /* vehicle reschedule has no undo target */ return; }
+    t.completedAt = null;
+    queueWrite('tasks');
+    state._lastClosed = null;
+    if (!state.currentCandidateId) nextCandidate();
+    render();
+  }
+
+  function deferTask(id, opts) {
+    var t = taskById(id);
+    if (!t) return { error: 'no such task' };
+    var today = todayISO();
+    var until = opts.until;
+    if (!until && opts.days != null) {
+      var days = opts.days;
+      if (typeof days === 'boolean' || !Number.isInteger(days) || days < 1) return { error: 'days must be an integer >= 1' };
+      until = addDays(today, days);
+    }
+    if (!until) return { error: 'until or days required' };
+    if (until <= today) return { error: 'defer date must be in the future' };
+    if (daysBetween(today, until) > DEFER_MAX_DAYS) return { error: 'defer date beyond ' + DEFER_MAX_DAYS + ' days — cancel it instead' };
+
+    var m = metaFor(id);
+    m.start = until;
+    if (opts.waitingOn !== undefined) m.waiting_on = opts.waitingOn || null;
+    m.comments.push({ at: nowISO(), body: opts.reason || '', kind: 'defer' });
+    syncMetaToTask(id);
+    queueWrite('meta');
+
+    var idx = state.chainDoc.chain.indexOf(id);
+    if (idx !== -1) { state.chainDoc.chain.splice(idx, 1); queueWrite('chain'); }
+    delete state.chainDoc.aside[id];
+
+    var warning = null;
+    if (isPlausibleDateStr(t.dueDate) && until > t.dueDate) {
+      warning = 'Wake date is after the due date — it will still show in the due-date view.';
+    }
+    render();
+    return { ok: true, warning: warning };
+  }
+
+  function wakeNow(id) {
+    metaFor(id).start = null;
+    syncMetaToTask(id);
+    queueWrite('meta');
+    render();
+  }
+
+  function addComment(id, body, kind) {
+    if (!body) return;
+    metaFor(id).comments.push({ at: nowISO(), body: body, kind: kind || 'note' });
+    syncMetaToTask(id);
+    queueWrite('meta');
+    render();
+  }
+
+  function addTask(fields) {
+    var t = {
+      id: genVaultId(), title: fields.title, priority: fields.priority || 'MEDIUM',
+      type: fields.type || 'task', dueDate: fields.due || null, isRecurring: false,
+      recurringIntervalDays: null, completedAt: null, createdAt: new Date().toISOString(),
+      notes: fields.notes || '', source: 'tasks',
+      comments: [], start: null, blocked_by: null, waiting_on: null, effort: fields.effort || null
+    };
+    state.tasks.push(t);
+    if (fields.effort) { metaFor(t.id).effort = fields.effort; queueWrite('meta'); }
+    queueWrite('tasks');
+    render();
+  }
+
+  // ---------- keybindings ----------
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (state.view !== 'review' || state.busy) return;
+    var k = e.key.toLowerCase();
+    if (k === 'y') decide('yes');
+    else if (k === 'n') decide('no');
+    else if (k === 'c') decide('cant');
+    else if (k === 'd') dislodge();
+  });
+
+  // ---------- rendering ----------
+
+  function priorityChip(p) {
+    var cls = p === 'HIGH' ? 'priority-high' : (p === 'LOW' ? 'priority-low' : '');
+    return '<span class="chip ' + cls + '">' + escapeHtml(p || '') + '</span>';
+  }
+  function scoreChip(id) {
+    var e = normalizeScoreEntry(state.scores[id]);
+    return '<span class="chip score">y' + e.yes + ' n' + e.no + ' c' + e.cant + '</span>';
+  }
+  function metaChips(t) {
+    var out = [priorityChip(t.priority), '<span class="chip">' + escapeHtml(t.type) + '</span>'];
+    if (t.effort) out.push('<span class="chip">' + escapeHtml(t.effort) + '</span>');
+    if (isPlausibleDateStr(t.dueDate)) {
+      out.push('<span class="chip ' + dueClass(t.dueDate) + '">due ' + escapeHtml(t.dueDate) + '</span>');
+    }
+    if (t.blocked_by) out.push('<span class="chip">blocked: ' + escapeHtml(t.blocked_by) + '</span>');
+    if (t.waiting_on) out.push('<span class="chip">waiting: ' + escapeHtml(t.waiting_on) + '</span>');
+    out.push(scoreChip(t.id));
+    return out.join('');
+  }
+  function commentsHtml(t, forId) {
+    var list = (t.comments || []).map(function (c) {
+      return '<div class="entry"><span class="at">' + escapeHtml((c.at || '').slice(0, 16).replace('T', ' ')) + '</span>' +
+        (c.kind && c.kind !== 'note' ? '<span class="kind">' + escapeHtml(c.kind) + '</span>' : '') +
+        escapeHtml(c.body) + '</div>';
+    }).join('');
+    return '<div class="comments">' + list +
+      '<div class="add"><textarea id="comment-input-' + forId + '" placeholder="Add a comment — Ctrl+Enter to submit"></textarea>' +
+      '<button data-action="comment" data-id="' + forId + '">Add</button></div></div>';
+  }
+  function closerHtml(id) {
+    return '<div class="closer">' +
+      '<button class="done" data-action="close" data-id="' + id + '">Done</button>' +
+      '<button class="cancel" data-action="close-cancel" data-id="' + id + '">Cancel task</button>' +
+      '<input class="hours" type="number" step="0.25" min="0" placeholder="hrs" id="hours-' + id + '">' +
+      '</div>';
+  }
+
+  var DEFER_PRESETS = [
+    { label: 'Tomorrow', days: 1 }, { label: '+3 days', days: 3 },
+    { label: 'Next week', days: 7 }, { label: '+2 weeks', days: 14 }
+  ];
+  function renderDeferPanel(id) {
+    if (state.deferOpenFor !== id) return '';
+    var open = state._deferPending || {};
+    var presets = DEFER_PRESETS.map(function (p) {
+      return '<button class="' + (open.days === p.days ? 'active' : '') + '" data-action="defer-preset" data-id="' + id + '" data-days="' + p.days + '">' + p.label + '</button>';
+    }).join('');
+    return '<div class="defer-panel">' +
+      '<div class="defer-presets">' + presets +
+      '<button class="' + (open.custom ? 'active' : '') + '" data-action="defer-custom" data-id="' + id + '">Pick a date</button></div>' +
+      (open.custom ? '<input type="date" id="defer-date-' + id + '" value="' + (open.until || '') + '">' : '') +
+      '<input type="text" id="defer-reason-' + id + '" placeholder="Reason (why is this waiting?)">' +
+      '<div class="row"><button data-action="defer-save" data-id="' + id + '">Defer it</button>' +
+      '<button class="cancel" data-action="defer-cancel" data-id="' + id + '">Cancel</button></div>' +
+      '</div>';
+  }
+
+  function renderBenchmarkCard(b) {
+    var html = '<div class="card">' +
+      '<div class="eyebrow"><span>Benchmark</span><span>' +
+      '<button class="dislodge-btn" data-action="dislodge">Dislodge <kbd>D</kbd></button> ' +
+      '<button class="dislodge-btn" data-action="defer-toggle" data-id="' + b.id + '">Defer</button></span></div>' +
+      '<div class="title">' + escapeHtml(b.title) + '</div>' +
+      '<div class="chips">' + metaChips(b) + '</div>' +
+      (b.notes ? '<div class="question">' + escapeHtml(b.notes) + '</div>' : '') +
+      renderDeferPanel(b.id) +
+      commentsHtml(b, b.id) +
+      closerHtml(b.id) +
+      '</div>';
+    return html;
+  }
+
+  function renderCandidateCard(cand, hasBenchmark) {
+    var html = '<div class="card">' +
+      '<div class="eyebrow"><span>' + (hasBenchmark ? 'Next up' : 'First candidate') + '</span></div>' +
+      '<div class="title">' + escapeHtml(cand.title) + '</div>' +
+      '<div class="chips">' + metaChips(cand) + '</div>' +
+      '<details class="drilldown"><summary>Detail</summary><div class="body">' +
+      (cand.notes ? escapeHtml(cand.notes) : '<em>No notes.</em>') +
+      '</div></details>' +
+      '<div class="question">' + (hasBenchmark ? 'Do you want to do this <strong>more than</strong> the benchmark?' : 'Start the chain here?') + '</div>' +
+      '<div class="btn-row">' +
+      '<button class="yes" data-action="decide" data-decision="yes"><span class="label">Yes</span><span class="sub">Dot it. Sets start to today.</span><kbd>Y</kbd></button>' +
+      '<button class="no" data-action="decide" data-decision="no"><span class="label">No</span><span class="sub">Push it down. Lowers priority for good.</span><kbd>N</kbd></button>' +
+      '<button class="cant" data-action="decide" data-decision="cant"><span class="label">Can’t</span><span class="sub">Skip, no penalty to its score.</span><kbd>C</kbd></button>' +
+      '</div>' +
+      '<div class="dispose-row">' +
+      '<button data-action="dispose">Already done</button>' +
+      '<button data-action="dispose-cancel">Cancel task</button>' +
+      '</div>' +
+      '<div class="subactions">' +
+      '<button data-action="reshuffle">Reshuffle</button>' +
+      '<button data-action="reload">Reload store</button>' +
+      '<button data-action="work-chain">Stop reviewing, work the chain</button>' +
+      '</div>' +
+      '</div>';
+    return html;
+  }
+
+  function renderEmptyState() {
+    var pool = activePool();
+    var eligible = eligiblePool();
+    if (state.chainDoc.chain.length) {
+      return '<div class="empty-state"><div class="big">Pool’s empty. Go work the chain.</div>' +
+        '<div class="subactions" style="justify-content:center;"><button data-action="work-chain">Work the chain</button></div></div>';
+    }
+    if (pool.length && !eligible.length) {
+      return '<div class="empty-state"><div class="big">Nothing in the pool.</div>' +
+        '<p>Loosen the filters — everything’s screened out right now.</p>' +
+        '<div class="subactions" style="justify-content:center;"><button data-action="return-aside">Return set-aside to pool</button></div></div>';
+    }
+    return '<div class="empty-state"><div class="big">Nothing in the pool.</div></div>';
+  }
+
+  function renderNudge() {
+    var slot = document.getElementById('nudge-slot');
+    if (state.view === 'review' && state.reviewed >= NUDGE_AT && benchmarkTask()) {
+      slot.innerHTML = '<div class="nudge"><span>Still deciding? Just do the benchmark?</span>' +
+        '<button data-action="close" data-id="' + benchmarkTask().id + '">Do it</button></div>';
+    } else slot.innerHTML = '';
+  }
+
+  function renderCarry() {
+    var slot = document.getElementById('carry-slot');
+    if (state.carriedFrom) {
+      slot.innerHTML = '<div class="carry"><span>Chain carried over from ' + escapeHtml(state.carriedFrom) + '.</span>' +
+        '<button data-action="clear-chain">Clear chain</button></div>';
+    } else slot.innerHTML = '';
+  }
+
+  function renderBanner() {
+    var slot = document.getElementById('banner-slot');
+    var parts = [];
+    if (state.dropped.length) parts.push(state.dropped.length + ' dropped from chain (no longer active)');
+    if (state.slept.length) parts.push(state.slept.length + ' deferred out of the chain');
+    if (!vaultRuntime.connected && vaultRuntime.lastError) parts.push('Vault sync failed');
+    slot.innerHTML = parts.length ? '<div class="banner">' + parts.join(' · ') + '</div>' : '';
+  }
+
+  // Lives in its own slot, not inside the closed task's card — the card (benchmark/candidate/
+  // chain row) it belonged to is usually gone the moment a close happens, since the task just
+  // left the chain and the pool. The notice has to survive that.
+  function renderNotice() {
+    var slot = document.getElementById('notice-slot');
+    if (state._lastClosed) {
+      var t = taskById(state._lastClosed);
+      slot.innerHTML = '<div class="notice good"><span>' + (t ? 'Closed: ' + escapeHtml(t.title) : 'Closed.') +
+        '</span><button data-action="undo" data-id="' + state._lastClosed + '">Undo</button></div>';
+    } else slot.innerHTML = '';
+  }
+
+  function renderChainMode() {
+    var chain = state.chainDoc.chain.slice().reverse();
+    if (!chain.length) return '<div class="empty-state"><div class="big">Chain is empty.</div></div>';
+    var items = chain.map(function (id, i) {
+      var t = taskById(id);
+      if (!t) return '';
+      return '<li><span class="n">#' + (i + 1) + '</span><span class="t">' + escapeHtml(t.title) + '</span>' +
+        '<div class="row-actions">' +
+        '<button data-action="close" data-id="' + id + '">Done</button>' +
+        '<button data-action="close-cancel" data-id="' + id + '">Cancel</button>' +
+        '</div></li>';
+    }).join('');
+    return '<div class="card"><ul class="chain-list">' + items + '</ul>' +
+      '<div class="subactions">' +
+      '<button data-action="copy-chain">Copy chain</button>' +
+      '<button data-action="clear-chain">Clear chain</button>' +
+      '<button data-action="back-review">Back to review</button>' +
+      '</div></div>';
+  }
+
+  function renderStage() {
+    var stage = document.getElementById('stage');
+    if (state.view === 'chain') { stage.innerHTML = renderChainMode(); return; }
+    var b = benchmarkTask();
+    var cand = taskById(state.currentCandidateId);
+    var html = '';
+    if (b) html += renderBenchmarkCard(b);
+    if (cand) html += renderCandidateCard(cand, !!b);
+    else html += renderEmptyState();
+    stage.innerHTML = html;
+  }
+
+  function renderPanels() {
+    document.getElementById('badge-chain').textContent = state.chainDoc.chain.length;
+    document.getElementById('badge-aside').textContent = Object.keys(state.chainDoc.aside || {}).length;
+    var pool = activePool();
+    var sleeping = pool.filter(function (t) { return isAsleep(t, todayISO()); });
+    document.getElementById('badge-sleep').textContent = sleeping.length;
+    document.getElementById('badge-pool').textContent = eligiblePool().length;
+    document.getElementById('badge-scores').textContent = Object.keys(state.scores).length;
+
+    document.getElementById('panel-chain-body').innerHTML = renderChainMode();
+
+    var typeSet = {}, effortSet = {};
+    pool.forEach(function (t) { typeSet[t.type] = true; if (t.effort) effortSet[t.effort] = true; });
+    var chip = function (label, active, action) {
+      return '<span class="chip filter' + (active ? ' active' : '') + '" data-action="' + action + '">' + escapeHtml(label) + '</span>';
+    };
+    var filtersHtml = Object.keys(typeSet).map(function (t) { return chip(t, state.filters.type === t, 'filter-type:' + t); }).join('') +
+      ['HIGH', 'MEDIUM', 'LOW'].map(function (p) { return chip(p, state.filters.priority === p, 'filter-priority:' + p); }).join('') +
+      Object.keys(effortSet).map(function (e) { return chip(e, state.filters.effort === e, 'filter-effort:' + e); }).join('') +
+      '<label class="toggle"><input type="checkbox" data-action="toggle-hideBlocked" ' + (state.filters.hideBlocked ? 'checked' : '') + '> hide blocked</label>' +
+      '<label class="toggle"><input type="checkbox" data-action="toggle-hideWaiting" ' + (state.filters.hideWaiting ? 'checked' : '') + '> hide waiting</label>' +
+      '<label class="toggle"><input type="checkbox" data-action="toggle-startedOnly" ' + (state.filters.startedOnly ? 'checked' : '') + '> started only</label>' +
+      '<input type="search" placeholder="search" id="pool-search" value="' + escapeHtml(state.filters.q) + '">';
+    document.getElementById('pool-filters').innerHTML = filtersHtml;
+    document.getElementById('pool-list').innerHTML = eligiblePool().map(function (t) {
+      return '<div class="row"><span class="r-title">' + escapeHtml(t.title) + '</span><span class="r-meta">' + escapeHtml(t.id) + '</span>' +
+        '<button data-action="defer-toggle" data-id="' + t.id + '">Defer</button></div>' + renderDeferPanel(t.id);
+    }).join('') || '<div class="row"><span class="r-title">Nothing matches.</span></div>';
+
+    document.getElementById('aside-list').innerHTML = Object.keys(state.chainDoc.aside || {}).map(function (id) {
+      var t = taskById(id);
+      if (!t) return '';
+      return '<div class="row"><span class="r-title">' + escapeHtml(t.title) + '</span></div>';
+    }).join('') || '<div class="row"><span class="r-title">Nothing set aside.</span></div>';
+
+    document.getElementById('sleep-list').innerHTML = sleeping.sort(function (a, b2) { return (a.start || '').localeCompare(b2.start || ''); }).map(function (t) {
+      return '<div class="row"><span class="r-title">' + escapeHtml(t.title) + '</span><span class="r-meta">wakes ' + escapeHtml(t.start) + '</span>' +
+        '<button data-action="wake" data-id="' + t.id + '">Wake now</button></div>';
+    }).join('') || '<div class="row"><span class="r-title">Nothing sleeping.</span></div>';
+
+    var scoreRows = Object.keys(state.scores).map(function (id) { return { id: id, m: meanEstimate(state.scores[id]) }; })
+      .sort(function (a, b2) { return b2.m - a.m; });
+    document.getElementById('scores-list').innerHTML = scoreRows.map(function (r) {
+      var t = taskById(r.id);
+      return '<div class="row"><span class="r-title">' + escapeHtml(t ? t.title : r.id) + '</span><span class="r-meta">' + r.m.toFixed(2) + '</span></div>';
+    }).join('') || '<div class="row"><span class="r-title">No scores yet.</span></div>';
+  }
+
+  function renderHeader() {
+    document.getElementById('snapshot-stamp').textContent = todayISO();
+    var pool = activePool().length;
+    document.getElementById('header-counts').textContent =
+      state.chainDoc.chain.length + ' chained · ' + pool + ' in pool';
+    var total = state.chainDoc.chain.length + eligiblePool().length;
+    var pct = total ? Math.round(100 * state.chainDoc.chain.length / total) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function render() {
+    if (!vaultRuntime.connected) return;
+    reconcileChain();
+    renderHeader();
+    renderBanner();
+    renderNotice();
+    renderCarry();
+    renderNudge();
+    renderStage();
+    renderPanels();
+  }
+
+  // ---------- event delegation ----------
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action]');
+    if (!el) return;
+    var action = el.getAttribute('data-action');
+    var id = el.getAttribute('data-id');
+    if (action === 'decide') decide(el.getAttribute('data-decision'));
+    else if (action === 'dislodge') dislodge();
+    else if (action === 'dispose') disposeCandidate({ cancel: false });
+    else if (action === 'dispose-cancel') disposeCandidate({ cancel: true });
+    else if (action === 'close') { var h = document.getElementById('hours-' + id); closeTask(id, { hours: h ? h.value : null }); }
+    else if (action === 'close-cancel') closeTask(id, { cancel: true });
+    else if (action === 'undo') undoClose(id);
+    else if (action === 'wake') wakeNow(id);
+    else if (action === 'reshuffle') { nextCandidate(); render(); }
+    else if (action === 'reload') pullVault();
+    else if (action === 'work-chain') { state.view = 'chain'; syncViewButtons(); render(); }
+    else if (action === 'back-review') { state.view = 'review'; syncViewButtons(); render(); }
+    else if (action === 'clear-chain') { state.chainDoc.chain = []; state.carriedFrom = null; queueWrite('chain'); render(); }
+    else if (action === 'copy-chain') {
+      var text = state.chainDoc.chain.slice().reverse().map(function (cid, i) {
+        var t = taskById(cid); return (i + 1) + '. ' + (t ? t.title : cid);
+      }).join('\n');
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      toast('Chain copied.');
+    }
+    else if (action === 'return-aside') { state.chainDoc.aside = {}; queueWrite('chain'); render(); }
+    else if (action === 'comment') {
+      var ta = document.getElementById('comment-input-' + id);
+      if (ta && ta.value.trim()) { addComment(id, ta.value.trim(), 'note'); ta.value = ''; }
+    }
+    else if (action === 'defer-toggle') {
+      state.deferOpenFor = state.deferOpenFor === id ? null : id;
+      state._deferPending = null;
+      render();
+    }
+    else if (action === 'defer-preset') {
+      var days = parseInt(el.getAttribute('data-days'), 10);
+      state._deferPending = { days: days, custom: false, until: addDays(todayISO(), days) };
+      render();
+    }
+    else if (action === 'defer-custom') {
+      state._deferPending = Object.assign({}, state._deferPending, { custom: true, days: null });
+      render();
+    }
+    else if (action === 'defer-cancel') { state.deferOpenFor = null; state._deferPending = null; render(); }
+    else if (action === 'defer-save') {
+      var pending = state._deferPending || {};
+      var reasonEl = document.getElementById('defer-reason-' + id);
+      var reason = reasonEl ? reasonEl.value.trim() : '';
+      var opts = { reason: reason };
+      if (pending.custom) {
+        var dateEl = document.getElementById('defer-date-' + id);
+        opts.until = dateEl ? dateEl.value : null;
+      } else if (pending.days) {
+        opts.days = pending.days;
+      } else { toast('Pick a preset or a date first.'); return; }
+      var result = deferTask(id, opts);
+      if (result.error) { toast(result.error); return; }
+      if (result.warning) toast(result.warning);
+      state.deferOpenFor = null; state._deferPending = null;
+      nextCandidate();
+      render();
+    }
+    else if (action && action.indexOf('filter-type:') === 0) { toggleFilter('type', action.slice(12)); }
+    else if (action && action.indexOf('filter-priority:') === 0) { toggleFilter('priority', action.slice(16)); }
+    else if (action && action.indexOf('filter-effort:') === 0) { toggleFilter('effort', action.slice(14)); }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+      var ta = e.target;
+      if (ta && ta.tagName === 'TEXTAREA' && ta.id && ta.id.indexOf('comment-input-') === 0) {
+        var id = ta.id.slice('comment-input-'.length);
+        if (ta.value.trim()) { addComment(id, ta.value.trim(), 'note'); ta.value = ''; }
+      }
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.id === 'pool-search') { state.filters.q = t.value; render(); }
+    else if (t.getAttribute && t.getAttribute('data-action') === 'toggle-hideBlocked') { state.filters.hideBlocked = t.checked; render(); }
+    else if (t.getAttribute && t.getAttribute('data-action') === 'toggle-hideWaiting') { state.filters.hideWaiting = t.checked; render(); }
+    else if (t.getAttribute && t.getAttribute('data-action') === 'toggle-startedOnly') { state.filters.startedOnly = t.checked; render(); }
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target.id === 'pool-search') { state.filters.q = e.target.value; renderPanels(); }
+  });
+
+  function toggleFilter(key, val) {
+    state.filters[key] = state.filters[key] === val ? null : val;
+    render();
+  }
+
+  document.getElementById('add-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    addTask({
+      title: document.getElementById('f-title').value.trim(),
+      priority: document.getElementById('f-priority').value,
+      type: document.getElementById('f-type').value,
+      effort: document.getElementById('f-effort').value || null,
+      due: document.getElementById('f-due').value || null,
+      notes: document.getElementById('f-notes').value.trim()
+    });
+    e.target.reset();
+  });
+
+  // ---------- views / gate / settings ----------
+
+  function syncViewButtons() {
+    document.querySelectorAll('nav.views button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-view') === state.view);
+    });
+    var inSettings = state.view === 'settings';
+    document.getElementById('panels').hidden = inSettings;
+    document.getElementById('stage').hidden = inSettings;
+    document.getElementById('view-settings').hidden = !inSettings;
+  }
+  document.querySelectorAll('nav.views button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.view = b.getAttribute('data-view');
+      syncViewButtons();
+      if (state.view !== 'settings') render();
     });
   });
 
-  document.getElementById('settings-form').addEventListener('submit', function (e) {
+  function showGate() { document.getElementById('gate').hidden = false; document.getElementById('app').hidden = true; }
+  function showApp() { document.getElementById('gate').hidden = true; document.getElementById('app').hidden = false; }
+
+  document.getElementById('gate-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    settings = readSettingsForm();
-    if (!settings.token || !settings.owner || !settings.repo || !settings.tasksPath) { toast('Token, owner, repo, and tasks file path are required'); return; }
+    var candidate = {
+      token: document.getElementById('g-0').value,
+      owner: document.getElementById('g-1').value,
+      repo: document.getElementById('g-2').value,
+      branch: document.getElementById('g-3').value,
+      tasksPath: document.getElementById('g-4').value,
+      vehiclePath: document.getElementById('g-5').value
+    };
+    Object.assign(candidate, derivedPaths(candidate.tasksPath));
+    settings = candidate;
+    try {
+      var probe = await ghGetFile(settings.tasksPath);
+      if (!probe) throw ghError(404, {});
+      saveSettings(settings);
+      showApp();
+      fillSettingsForm();
+      await pullVault();
+      nextCandidate();
+      syncViewButtons();
+      render();
+    } catch (err) {
+      document.querySelectorAll('#gate input').forEach(function (i) { i.classList.add('err'); });
+      document.getElementById('g-0').value = '';
+      settings = loadSettings();
+    }
+  });
+
+  document.getElementById('setup-test-btn').addEventListener('click', async function () {
+    var prev = settings;
+    var probeSettings = {
+      token: document.getElementById('s-token').value || (prev && prev.token),
+      owner: document.getElementById('s-owner').value,
+      repo: document.getElementById('s-repo').value,
+      branch: document.getElementById('s-branch').value,
+      tasksPath: document.getElementById('s-tasks-path').value
+    };
+    settings = probeSettings;
+    var out = document.getElementById('setup-test-result');
+    try {
+      var probe = await ghGetFile(settings.tasksPath);
+      out.textContent = probe ? 'OK' : 'File not found';
+      out.style.color = probe ? 'var(--good)' : 'var(--danger)';
+    } catch (err) {
+      out.textContent = 'Error: ' + err.message;
+      out.style.color = 'var(--danger)';
+    } finally {
+      settings = prev;
+    }
+  });
+
+  document.getElementById('settings-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var tasksPath = document.getElementById('s-tasks-path').value;
+    var derived = derivedPaths(tasksPath);
+    settings = {
+      token: document.getElementById('s-token').value || (settings && settings.token),
+      owner: document.getElementById('s-owner').value,
+      repo: document.getElementById('s-repo').value,
+      branch: document.getElementById('s-branch').value,
+      tasksPath: tasksPath,
+      vehiclePath: document.getElementById('s-vehicle-path').value || null,
+      scoresPath: document.getElementById('s-scores-path').value || derived.scoresPath,
+      chainPath: document.getElementById('s-chain-path').value || derived.chainPath,
+      metaPath: document.getElementById('s-meta-path').value || derived.metaPath
+    };
     saveSettings(settings);
-    state = { tasks: [], contexts: state.contexts && state.contexts.length ? state.contexts : defaultContexts(), benchmarkId: null, trail: [], vault: defaultVaultState() };
-    cantIds = {}; passStreak = 0; currentCandidateId = null; lastShownIds = {};
-    persist();
-    toast('Connecting…');
-    pullVault().then(function () {
-      toast(vaultRuntime.connected ? 'Connected' : 'Could not connect — check Diagnostics below');
-      switchView('focus');
-    });
+    state.tasks = [];
+    showApp();
+    await pullVault();
+    nextCandidate();
+    render();
   });
 
   document.getElementById('disconnect-btn').addEventListener('click', function () {
     clearSettings();
     settings = null;
-    state = { tasks: [], contexts: defaultContexts(), benchmarkId: null, trail: [], vault: defaultVaultState() };
-    cantIds = {}; passStreak = 0; currentCandidateId = null; lastShownIds = {};
-    persist();
-    fillSettingsForm();
-    vaultRuntime = { connected: false, syncing: false, lastError: null };
-    renderVaultStatus();
-    render();
-    document.getElementById('gate-form').reset();
+    vaultRuntime.connected = false;
     showGate();
   });
 
-  // ---------- gate ----------
+  document.getElementById('retry-sync-btn').addEventListener('click', function () { flushWriteBack(); pullVault(); });
 
-  function showGate() {
-    document.getElementById('app-root').style.display = 'none';
-    document.getElementById('gate').style.display = 'flex';
-    document.title = '';
+  function renderDiagnostics() {
+    document.getElementById('diagnostics-pre').textContent = JSON.stringify({
+      connected: vaultRuntime.connected, pulling: vaultRuntime.pulling,
+      lastError: vaultRuntime.lastError, sha: vaultRuntime.sha
+    }, null, 2);
+    document.getElementById('vault-status-line').textContent = vaultRuntime.connected
+      ? ('Connected to ' + (settings.owner || '') + '/' + (settings.repo || ''))
+      : 'Not connected';
+  }
+  setInterval(renderDiagnostics, 2000);
+
+  function fillSettingsForm() {
+    if (!settings) return;
+    document.getElementById('s-owner').value = settings.owner || '';
+    document.getElementById('s-repo').value = settings.repo || '';
+    document.getElementById('s-branch').value = settings.branch || '';
+    document.getElementById('s-tasks-path').value = settings.tasksPath || '';
+    document.getElementById('s-vehicle-path').value = settings.vehiclePath || '';
+    document.getElementById('s-scores-path').value = settings.scoresPath || '';
+    document.getElementById('s-chain-path').value = settings.chainPath || '';
+    document.getElementById('s-meta-path').value = settings.metaPath || '';
   }
 
-  function showApp() {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('app-root').style.display = '';
-    document.title = 'Chain — a Forster list';
-  }
+  // ---------- boot ----------
 
-  document.getElementById('gate-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var candidate = {
-      token: document.getElementById('g-0').value.trim(),
-      owner: document.getElementById('g-1').value.trim(),
-      repo: document.getElementById('g-2').value.trim(),
-      branch: document.getElementById('g-3').value.trim() || 'main',
-      tasksPath: document.getElementById('g-4').value.trim(),
-      vehiclePath: document.getElementById('g-5').value.trim()
-    };
-    if (!candidate.token || !candidate.owner || !candidate.repo || !candidate.tasksPath) return;
-    var prevSettings = settings;
-    settings = candidate;
-    ghGetFile(candidate.tasksPath).then(function (r) {
-      if (!r.json || !Array.isArray(r.json.tasks)) throw { message: 'unexpected response' };
-      saveSettings(settings);
-      state = { tasks: [], contexts: defaultContexts(), benchmarkId: null, trail: [], vault: defaultVaultState() };
-      cantIds = {}; passStreak = 0; currentCandidateId = null; lastShownIds = {};
-      persist();
+  (async function boot() {
+    if (settings && settings.token) {
       showApp();
-      switchView('focus');
-      pullVault();
-    }).catch(function () {
-      settings = prevSettings;
-      document.getElementById('g-0').value = '';
-      var form = document.getElementById('gate-form');
-      form.style.borderColor = '#c0392b';
-      setTimeout(function () { form.style.borderColor = ''; }, 400);
-    });
-  });
+      fillSettingsForm();
+      syncViewButtons();
+      await pullVault();
+      nextCandidate();
+      render();
+    } else {
+      showGate();
+    }
+  })();
 
-  // ---------- contexts drawer + tabs ----------
-
-  document.getElementById('contexts-toggle').addEventListener('click', function () {
-    document.getElementById('contexts-drawer').classList.toggle('open');
-  });
-
-  document.getElementById('tab-focus').addEventListener('click', function () { switchView('focus'); });
-  document.getElementById('tab-list').addEventListener('click', function () { switchView('list'); });
-  document.getElementById('tab-settings').addEventListener('click', function () { switchView('settings'); });
-  function switchView(v) {
-    document.getElementById('tab-focus').classList.toggle('active', v === 'focus');
-    document.getElementById('tab-list').classList.toggle('active', v === 'list');
-    document.getElementById('tab-settings').classList.toggle('active', v === 'settings');
-    document.getElementById('view-focus').classList.toggle('active', v === 'focus');
-    document.getElementById('view-list').classList.toggle('active', v === 'list');
-    document.getElementById('view-settings').classList.toggle('active', v === 'settings');
-    if (v === 'list') renderListView();
-    if (v === 'settings') { fillSettingsForm(); renderVaultStatus(); }
-  }
-
-  // ---------- init ----------
-
-  fillSettingsForm();
-  renderVaultStatus();
-  ensureBenchmark();
-  nextCandidate();
-  persist();
-  if (settings) {
-    showApp(); switchView('focus');
-    pullVault().then(function () { if (vaultDirty()) flushWriteBack(); });
-  } else { showGate(); }
 })();
 </script>
 

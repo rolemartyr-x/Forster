@@ -340,12 +340,10 @@
 
 <div id="gate">
   <form id="gate-form" autocomplete="off">
-    <input id="g-0" type="password" placeholder="" autocomplete="off">
-    <input id="g-1" type="text" placeholder="" autocomplete="off">
-    <input id="g-2" type="text" placeholder="" autocomplete="off">
-    <input id="g-3" type="text" placeholder="" autocomplete="off">
-    <input id="g-4" type="text" placeholder="" autocomplete="off">
-    <input id="g-5" type="text" placeholder="" autocomplete="off">
+    <input id="g-0" type="password" placeholder="Personal access token" autocomplete="off">
+    <input id="g-1" type="text" placeholder="Tasks file path" autocomplete="off">
+    <input id="g-2" type="text" placeholder="Vehicle maintenance path (optional)" autocomplete="off">
+    <div id="gate-error" style="display:none;color:#c42b32;font-size:13px;"></div>
     <button type="submit">→</button>
   </form>
 </div>
@@ -478,6 +476,9 @@
   var NUDGE_AT = 12;
   var SETTINGS_KEY = 'chainApp.settings.v2';
   var STATE_KEY = 'chainApp.state.v2';
+  var DEFAULT_OWNER = 'rolemartyr-x';
+  var DEFAULT_REPO = 'claude';
+  var DEFAULT_BRANCH = 'main';
 
   // ---------- generic utils ----------
 
@@ -1551,21 +1552,29 @@
   function showGate() { document.getElementById('gate').hidden = false; document.getElementById('app').hidden = true; }
   function showApp() { document.getElementById('gate').hidden = true; document.getElementById('app').hidden = false; }
 
+  document.querySelectorAll('#gate input').forEach(function (i) {
+    i.addEventListener('input', function () {
+      i.classList.remove('err');
+      document.getElementById('gate-error').style.display = 'none';
+    });
+  });
+
   document.getElementById('gate-form').addEventListener('submit', async function (e) {
     e.preventDefault();
     var candidate = {
       token: document.getElementById('g-0').value,
-      owner: document.getElementById('g-1').value,
-      repo: document.getElementById('g-2').value,
-      branch: document.getElementById('g-3').value,
-      tasksPath: document.getElementById('g-4').value,
-      vehiclePath: document.getElementById('g-5').value
+      owner: DEFAULT_OWNER,
+      repo: DEFAULT_REPO,
+      branch: DEFAULT_BRANCH,
+      tasksPath: document.getElementById('g-1').value,
+      vehiclePath: document.getElementById('g-2').value
     };
     Object.assign(candidate, derivedPaths(candidate.tasksPath));
     settings = candidate;
+    var errEl = document.getElementById('gate-error');
     try {
       var probe = await ghGetFile(settings.tasksPath);
-      if (!probe) throw ghError(404, {});
+      if (!probe) throw ghError(404, { message: 'File not found at that path.' });
       saveSettings(settings);
       showApp();
       fillSettingsForm();
@@ -1576,6 +1585,8 @@
     } catch (err) {
       document.querySelectorAll('#gate input').forEach(function (i) { i.classList.add('err'); });
       document.getElementById('g-0').value = '';
+      errEl.textContent = err.message || 'Connection failed.';
+      errEl.style.display = 'block';
       settings = loadSettings();
     }
   });

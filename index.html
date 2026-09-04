@@ -70,6 +70,7 @@
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     background: #fafafa; color: #222; font-family: system-ui, sans-serif;
   }
+  #gate[hidden] { display: none; }
   #gate form { display: grid; gap: 8px; width: 280px; }
   #gate input {
     padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font: inherit;
@@ -752,6 +753,21 @@
     });
     return out;
   }
+  // Local is authoritative for tasks it already knows about (this app never deletes
+  // from tasks.json, only marks completedAt); a remote-only id means another device
+  // added it since our last pull, so it's appended rather than dropped.
+  function mergeTasks(local, remote) {
+    var localIds = {};
+    local.tasks.forEach(function (t) { localIds[t.id] = true; });
+    var remoteOnly = ((remote && remote.tasks) || []).filter(function (t) { return !localIds[t.id]; });
+    return Object.assign({}, remote, local, { tasks: local.tasks.concat(remoteOnly) });
+  }
+  function mergeVehicle(local, remote) {
+    var localIds = {};
+    local.vehicleMaintenance.forEach(function (t) { localIds[t.id] = true; });
+    var remoteOnly = ((remote && remote.vehicleMaintenance) || []).filter(function (t) { return !localIds[t.id]; });
+    return Object.assign({}, remote, local, { vehicleMaintenance: local.vehicleMaintenance.concat(remoteOnly) });
+  }
 
   function queueWrite(kind, vehicleId) {
     pendingWrite[kind] = true;
@@ -802,9 +818,7 @@
   async function writeTasksAndVehicle() {
     var tasksOut = state.tasks.filter(function (t) { return t.source !== 'vehicle'; }).map(toVaultTaskShape);
     var raw = Object.assign({}, vaultRuntime.raw.tasksRaw || {}, { exportedAt: new Date().toISOString(), tasks: tasksOut });
-    var sha = await ghPutFile(settings.tasksPath, raw, vaultRuntime.sha.tasks, 'Chain: sync ' + tasksOut.length + ' task update(s)');
-    vaultRuntime.sha.tasks = sha;
-    vaultRuntime.raw.tasksRaw = raw;
+    vaultRuntime.raw.tasksRaw = await ghPutWithMerge(settings.tasksPath, raw, 'tasks', 'Chain: sync ' + tasksOut.length + ' task update(s)', mergeTasks);
 
     if (settings.vehiclePath && Object.keys(pendingWrite.vehicle).length) {
       var vehOut = state.tasks.filter(function (t) { return t.source === 'vehicle'; }).map(function (t) {
@@ -814,9 +828,7 @@
         };
       });
       var vraw = Object.assign({}, vaultRuntime.raw.vehicleRaw || {}, { exportedAt: new Date().toISOString(), vehicleMaintenance: vehOut });
-      var vsha = await ghPutFile(settings.vehiclePath, vraw, vaultRuntime.sha.vehicle, 'Chain: log ' + Object.keys(pendingWrite.vehicle).length + ' vehicle maintenance completion(s)');
-      vaultRuntime.sha.vehicle = vsha;
-      vaultRuntime.raw.vehicleRaw = vraw;
+      vaultRuntime.raw.vehicleRaw = await ghPutWithMerge(settings.vehiclePath, vraw, 'vehicle', 'Chain: log ' + Object.keys(pendingWrite.vehicle).length + ' vehicle maintenance completion(s)', mergeVehicle);
     }
     // always re-pull to keep sha fresh for the next write, same as before
     await pullVault();

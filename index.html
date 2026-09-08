@@ -699,24 +699,28 @@
   }
 
   // Conflict-safe write: on 409/422 (stale sha), re-fetch, let `merge` reconcile onto the
-  // fresh remote copy, and retry once. There's no local file lock here (unlike the work
+  // fresh remote copy, and retry. There's no local file lock here (unlike the work
   // system) — two devices writing near-simultaneously is the failure mode this guards against.
+  // Bounded loop rather than a single retry: with two devices both actively syncing (phone +
+  // PC), a second collision landing inside the old one-shot retry threw all the way up and
+  // left the user stuck with a visible error until an unrelated edit re-queued the write.
+  var PUT_WITH_MERGE_MAX_ATTEMPTS = 4;
   async function ghPutWithMerge(path, localObj, shaKey, message, merge) {
+    var obj = localObj;
     var sha = vaultRuntime.sha[shaKey];
-    try {
-      var newSha = await ghPutFile(path, localObj, sha, message);
-      vaultRuntime.sha[shaKey] = newSha;
-      return localObj;
-    } catch (err) {
-      if (err.status === 409 || err.status === 422) {
+    for (var attempt = 1; attempt <= PUT_WITH_MERGE_MAX_ATTEMPTS; attempt++) {
+      try {
+        var newSha = await ghPutFile(path, obj, sha, message);
+        vaultRuntime.sha[shaKey] = newSha;
+        if (attempt > 1) toast('Merged a concurrent change from another device.');
+        return obj;
+      } catch (err) {
+        if (err.status !== 409 && err.status !== 422) throw err;
+        if (attempt === PUT_WITH_MERGE_MAX_ATTEMPTS) throw err;
         var fresh = await ghGetFile(path);
-        var merged = fresh ? merge(localObj, fresh.json) : localObj;
-        var retrySha = await ghPutFile(path, merged, fresh ? fresh.sha : null, message);
-        vaultRuntime.sha[shaKey] = retrySha;
-        toast('Merged a concurrent change from another device.');
-        return merged;
+        obj = fresh ? merge(obj, fresh.json) : obj;
+        sha = fresh ? fresh.sha : null;
       }
-      throw err;
     }
   }
 
@@ -1656,7 +1660,15 @@
     showGate();
   });
 
-  document.getElementById('retry-sync-btn').addEventListener('click', function () { flushWriteBack(); pullVault(); });
+  // Push pending writes before pulling: pullVault() overwrites local state (state.chainDoc,
+  // state.scores, state.metaDoc) unconditionally from remote, so pulling first would discard
+  // any not-yet-synced local change. Both calls must be awaited in order — firing them
+  // unsequenced (as this used to) let pullVault's overwrite race flushWriteBack's read of the
+  // same state, and meant a retry could silently reuse a stale cached sha.
+  document.getElementById('retry-sync-btn').addEventListener('click', async function () {
+    await flushWriteBack();
+    await pullVault();
+  });
 
   function renderDiagnostics() {
     document.getElementById('diagnostics-pre').textContent = JSON.stringify({
